@@ -105,7 +105,8 @@ class ProductList extends Component
         }
 
         $products = $query->paginate(12);
-        $categories = Category::where('is_active', true)->get();
+        // $categories = Category::where('is_active', true)->get();
+        $categories = Category::all();
 
         return view('livewire.product-list', [
             'products' => $products,

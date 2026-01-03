@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('divisions', function (Blueprint $table) {
+        Schema::create('category_division', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('code')->unique();
-            $table->string('slug')->unique();
-            $table->text('description')->nullable();
-            $table->string('image')->nullable();
+            $table->foreignId('category_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('division_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+            $table->unique(['category_id', 'division_id']);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('divisions');
+        Schema::dropIfExists('category_division');
     }
 };

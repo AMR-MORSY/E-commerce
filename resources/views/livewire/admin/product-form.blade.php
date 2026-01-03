@@ -213,6 +213,27 @@
                             <option value="0">Inactive</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Division</label>
+                        <select wire:model.live="division" class="w-full border rounded px-3 py-2">
+                            @foreach ($divisions as $division)
+                                <option value="{{ $division->id }}">{{ $division->name }}</option>
+                                
+                            @endforeach
+                           
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Category</label>
+                        <select wire:model="category_id" class="w-full border rounded px-3 py-2">
+                           @foreach ($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                           @endforeach
+                        </select>
+                        @error("category_id")
+                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                    @enderror
+                    </div>
                 </div>
 
                 <div class="mt-4">

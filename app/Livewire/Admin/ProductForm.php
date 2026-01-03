@@ -2,12 +2,16 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-
 use App\Models\Product;
+
+use Livewire\Component;
+use App\Models\Category;
+use App\Models\Division;
+use Illuminate\Support\Str;
 use App\Models\ProductColor;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Storage;
 
 class ProductForm extends Component
 {
@@ -33,6 +37,9 @@ class ProductForm extends Component
     // #[Validate('nullable|image|max:2048')]
     public $main_image;
 
+    public $division;
+    public $category_id;
+    public $categories = [];
     public $colors = [];
     public $colorImages = [];
     public $existingColorImages = [];
@@ -44,6 +51,8 @@ class ProductForm extends Component
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'base_price' => 'required|numeric|min:0',
+
+        'category_id' => 'required|exists:categories,id',
         // 'sku' => 'required|string|max:255',
         'is_active' => 'boolean',
         'main_image' => 'nullable|mimes:jpg,jpeg,png,webp|max:2048',
@@ -62,6 +71,19 @@ class ProductForm extends Component
         'colorImages.*.images.*' => 'nullable|mimes:jpg,jpeg,png,webp|max:2048'
     ];
 
+
+    public function updatedDivision($value)
+    {
+        $division = Division::find($value);
+        $this->categories = $division->categories;
+    }
+
+    protected function getCategories()
+    {
+        $division = Division::all()->first();
+        $this->categories = $division->categories;
+        $this->category_id = $this->categories[0]['id'];
+    }
     public function mount($productId = null)
     {
         if ($productId) {
@@ -69,6 +91,7 @@ class ProductForm extends Component
             $this->isEdit = true;
             $this->loadProductData();
         } else {
+            $this->getCategories();
             $this->addColor();
         }
     }
@@ -80,6 +103,8 @@ class ProductForm extends Component
         $this->base_price = $this->product->base_price;
         $this->sku = $this->product->sku;
         $this->is_active = $this->product->is_active;
+        $this->division = $this->product->categories->first()->division->id;
+        $this->category_id = $this->product->category->id;
 
         foreach ($this->product->colors as $index => $color) {
             $this->colors[$index] = [
@@ -137,29 +162,17 @@ class ProductForm extends Component
 
         $validated = $this->validate();
 
+        // dd($validated);
 
 
-        //     Validate colors
-        //   $validated_colors=  $this->validate([
-        //         'colors.*.name' => 'required|string|max:255',
-        //         'colors.*.hex_code' => 'required|string|max:7',
-        //         'colors.*.sizes.*.quantity' => 'nullable|integer|min:0',
-        //         'colors.*.sizes.*.price_adjustment' => 'nullable|numeric',
-        //         'colorImages.*.images.*'=>'nullable|image|max:2048'
-
-        //     ]);
-
-
-
-
-
-        \DB::transaction(function () {
+        \DB::transaction(function () use ($validated) {
             if ($this->isEdit) {
                 $this->product->update([
                     'name' => $this->name,
                     'description' => $this->description,
                     'base_price' => $this->base_price,
-                    'sku' => $this->sku,
+                    'category_id' => $this->category_id,
+                    'slug' => Str::slug($this->name),
                     'is_active' => $this->is_active,
                 ]);
             } else {
@@ -167,7 +180,8 @@ class ProductForm extends Component
                     'name' => $this->name,
                     'description' => $this->description,
                     'base_price' => $this->base_price,
-                    'sku' => $this->sku,
+                    'category_id' => $this->category_id,
+                    'slug' => Str::slug($this->name),
                     'is_active' => $this->is_active,
                 ]);
             }
@@ -175,9 +189,19 @@ class ProductForm extends Component
             // Handle main image
             if ($this->main_image) {
                 $this->product->clearMediaCollection('main_image');
-                $this->product->addMedia($this->main_image->getRealPath())
-                    ->usingFileName($this->main_image->getClientOriginalName())
-                    ->toMediaCollection('main_image');
+                $tempPath = $this->main_image->store('site-images', 's3');
+
+
+                // Step 2: Copy from S3 to media library on S3
+                $this->product->addMediaFromDisk($tempPath, 's3')
+
+                    ->toMediaCollection('main-image');
+
+                // Step 3: Clean up temp file
+                Storage::disk('s3')->delete($tempPath);
+                // $this->product->addMedia($this->main_image->getRealPath())
+                //     ->usingFileName($this->main_image->getClientOriginalName())
+                //     ->toMediaCollection('main_image');
             }
 
             // Handle colors
@@ -201,11 +225,14 @@ class ProductForm extends Component
                 $colorIds[] = $color->id;
 
                 // Handle color image
-                if (isset($this->colorImages[$index]) && $this->colorImages[$index]) {
+                if (isset($validated['colorImages'][$index]['images']) && $validated['colorImages'][$index]['images']) {
                     $color->clearMediaCollection('color_images');
-                    $color->addMedia($this->colorImages[$index]->getRealPath())
-                        ->usingFileName($this->colorImages[$index]->getClientOriginalName())
-                        ->toMediaCollection('color_images');
+                    foreach ($validated['colorImages'][$index]['images'] as $image) {
+                        $tempPath = $image->store('site-images', 's3');
+                        $color->addMediaFromDisk($tempPath, 's3')
+                            ->toMediaCollection('color_images');
+                        Storage::disk('s3')->delete($tempPath);
+                    }
                 }
 
                 // Handle sizes
@@ -246,7 +273,8 @@ class ProductForm extends Component
     {
         return view('livewire.admin.product-form', [
             'availableSizes' => $this->availableSizes,
-        
+            'divisions' => Division::all(),
+            // 'categories' => Category::all(),
         ]);
     }
 }

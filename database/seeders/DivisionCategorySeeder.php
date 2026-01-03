@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Division;
 use Illuminate\Support\Str;
 use App\Enums\CategoriesEnum;
@@ -32,15 +33,22 @@ class DivisionCategorySeeder extends Seeder
             ]);
         }
 
+        foreach(CategoriesEnum::cases() as $category) {
+            Category::create([
+                'name' => $category->label(),
+                'slug' => Str::slug($category->label()),
+                'description' => "latest fashionable for.{{$category->label()}}.clothing and accessories",
+                "code"=>$category->value,
+                
+            ]);
+        }
+
         $divisions=Division::all();
-        $categories=CategoriesEnum::cases();
+        $categories=Category::all();
         foreach ($divisions as $division) {
             foreach ($categories as $category) {
-                $division->categories()->create([
-                    'name' => $category->label(),
-                    'slug' => Str::slug($category->label()),
-                    'description' => $division->description,
-                    "code"=>$category->value,
+                $division->categories()->attach($category->id, [
+                    'is_active' => true
                 ]);
             }
         }

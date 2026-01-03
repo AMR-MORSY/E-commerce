@@ -6,6 +6,7 @@ use App\Models\Division;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Category extends Model
 {
@@ -25,8 +26,8 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
-    public function division(): BelongsTo
+    public function divisions(): BelongsToMany
     {
-        return $this->belongsTo(Division::class);
+        return $this->belongsToMany(Division::class, 'category_division')->withPivot('is_active');
     }
 }

@@ -13,15 +13,11 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('division_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('code');
-            $table->string('slug');
+            $table->string('name')->unique();
+            $table->string('code')->unique();
+            $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->string('image')->nullable();
-            $table->boolean('is_active')->default(true);
-            //  -- Critical: unique within division
-            $table->UNIQUE('slug', 'division_id');  
+            $table->string('image')->nullable(); 
             $table->timestamps();
         });
     }

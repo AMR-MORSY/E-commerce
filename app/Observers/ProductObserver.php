@@ -21,7 +21,7 @@ class ProductObserver
     /**
      * Handle the Product "created" event.
      */
-    public function creating(Product $product): void
+    public function created(Product $product): void
     {
         
         if (empty($product->sku)) {
