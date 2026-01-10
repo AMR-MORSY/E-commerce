@@ -71,12 +71,12 @@ class Checkout extends Component
                 $product = Product::where('id', $cartItem->product->id)->first();
 
                 if (!$product) {
-                    session()->flash('error', "Product not found!");
-                    return;
+                    session()->flash('error', "$product->name.is not available any more!");
+                    return back();
                 }
-                if ($cartItem->quantity > $cartItem->product->quantity) {
-                    session()->flash('error', "Insufficient stock for {$cartItem->product->name}!");
-                    return;
+                if ($cartItem->quantity > $cartItem->product->colors->find($cartItem->product_color_id)->sizes->find($cartItem->product_size_id)->quantity) {
+                    session()->flash('error', "Insufficient stock for {$cartItem->product->name} with size {$cartItem->product->colors->find($cartItem->product_color_id)->sizes->find($cartItem->product_size_id)->size}!");
+                    return back();
                 }
             }
             $result = $this->withIdempotency('place_order', function () use ($user, $cartItems) {
@@ -161,13 +161,13 @@ class Checkout extends Component
             $product = $products->get($cartItem['product_id']);
 
             if (!$product) {
-                session()->flash('error', "Product not found!");
-                return;
+                session()->flash('error', "$product->name.is not available any more!");
+                return back();
             }
 
-            if ($cartItem['quantity'] > $product->quantity) {
-                session()->flash('error', "Insufficient stock for {$product->name}!");
-                return;
+            if ($cartItem['quantity'] > $product->colors->find($cartItem['product_color_id'])->sizes->find($cartItem['product_size_id'])->quantity) {
+                session()->flash('error', "Insufficient stock for {$product->name} with size {$product->colors->find($cartItem['product_color_id'])->sizes->find($cartItem['product_size_id'])->size}!");
+                return back();
             }
         }
 
@@ -207,9 +207,11 @@ class Checkout extends Component
                 $order->items()->create([
                     'product_id' => $cartItem['product_id'],
                     'product_name' => $product->name,
-                    'price' => $product->price,
+                    'price' => $product->base_price,
                     'quantity' => $cartItem['quantity'],
-                    'total' => $cartItem['quantity'] * $product->price,
+                    'product_color_id'=>$cartItem['product_color_id'],
+                    'product_size_id'=>$cartItem['product_size_id'],
+                    'total' => $cartItem['quantity'] * $product->base_price,
                 ]);
 
                 // Update product quantity

@@ -101,15 +101,16 @@
                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a>
             @endauth
         </div>
-        {{-- </div> --}}
-        {{-- </div> --}}
+       
     </nav>
 
     <main>
+     
         @if (session('message'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative max-w-7xl mx-auto mt-4"
                 role="alert">
                 <span class="block sm:inline">{{ session('message') }}</span>
+               
             </div>
         @endif
 
@@ -119,6 +120,8 @@
                 <span class="block sm:inline">{{ session('error') }}</span>
             </div>
         @endif
+
+   
 
         {{ $slot }}
     </main>
@@ -132,11 +135,11 @@
     </footer>
 
     @livewireScripts
-    <script>
+    {{-- <script>
         Livewire.on('cart-updated', () => {
             location.reload();
         });
-    </script>
+    </script> --}}
 </body>
 
 </html>

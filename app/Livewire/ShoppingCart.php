@@ -2,32 +2,37 @@
 
 namespace App\Livewire;
 
-use App\Models\CartItem;
+use Spatie\Image\Size;
+use App\Models\Product;
 use Livewire\Component;
+use App\Models\CartItem;
+use App\Models\ProductSize;
 use Livewire\Attributes\Layout;
 
 #[Layout('components.layouts.app')]
 class ShoppingCart extends Component
 {
+    // public $total;
     public function removeItem($cartItemId)
     {
         if (!auth()->check()) {
             session()->forget('cart.' . $cartItemId);
             session()->flash('message', 'Item removed from cart!');
-            $this->dispatch('cart-updated');
-            return;
+            return redirect()->route('cart');
+
+           
         }
         CartItem::where('id', $cartItemId)
             ->where('user_id', auth()->id())
             ->delete();
 
         session()->flash('message', 'Item removed from cart!');
-        $this->dispatch('cart-updated');
+        return redirect()->route('cart');
     }
 
     public function updateQuantity($cartItemId, $quantity)
     {
-       
+
         if ($quantity < 1) {
             return;
         }
@@ -53,15 +58,27 @@ class ShoppingCart extends Component
         $this->dispatch('cart-updated');
     }
 
+    /**
+     * get the final price including discounts and size price adjustment
+     */
+    protected function getProductFinalPrice($productId,$sizeId)
+    {
+        $product=Product::find($productId);
+        $size=ProductSize::find($sizeId);
+
+        return $product->getFinalPrice($size->price_adjustment);///////product model method
+        
+    }
+
     public function getTotalProperty()
     {
-       
-        if (!auth()->check()) {
-            $cartItems = collect(session()->get('cart', []));
 
-            return $cartItems->sum(function ($item) {
-                return $item['quantity'] * $item['product']['price'];
-            });
+        if (!auth()->check()) {
+            $cartItems = session()->get('cart', []);
+          
+            return  array_reduce( $cartItems, function($carry, $item) {
+                return $carry + ($item['quantity'] * $this->getProductFinalPrice($item['product']['id'],$item['product_size_id']) );
+            }, 0);
         }
 
         /** @var \App\Models\User $user */
@@ -70,7 +87,7 @@ class ShoppingCart extends Component
             ->with('product')
             ->get()
             ->sum(function ($item) {
-                return $item->quantity * $item->product->price;
+                return $item->quantity * $this->getProductFinalPrice($item->product->id,$item->product_size_id) ;
             });
     }
 

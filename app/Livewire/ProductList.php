@@ -77,7 +77,7 @@ class ProductList extends Component
     public function render()
     {
         $query = Product::where('is_active', true)
-            ->with('category');
+            ->with('colors.sizes');
 
         if ($this->search) {
             $query->where(function($q) {

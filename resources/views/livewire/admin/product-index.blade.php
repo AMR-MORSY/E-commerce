@@ -6,6 +6,10 @@
            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium">
             Add New Product
         </a>
+        <a href="{{ route('admin.products.discount.manager') }}" 
+           class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium">
+            Discount Manager
+        </a>
     </div>
 
     <!-- Success Message -->
@@ -101,6 +105,8 @@
                     @forelse($products as $product)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
+                                {{-- @dd($product->getMedia('main_image',['medium'])) --}}
+                                {{-- @dd($product->getMedia('main_image')) --}}
                                 @if($product->hasMedia('main_image'))
                                     <img src="{{ $product->getFirstMediaUrl('main_image','medium') }}" 
                                          alt="{{ $product->name }}"

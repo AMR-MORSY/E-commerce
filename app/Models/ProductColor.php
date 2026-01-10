@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\ProductSize;
+use App\Traits\HasProductImages;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -11,7 +12,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductColor extends Model implements HasMedia
 {
-    use InteractsWithMedia;
+    use InteractsWithMedia, HasProductImages;
 
     protected $fillable = [
         'product_id',
@@ -35,7 +36,7 @@ class ProductColor extends Model implements HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
             ->useDisk('s3')
             ->storeConversionsOnDisk('s3')
-            ->maxFilesize(5 * 1024 * 1024) // 5MB limit
+            // ->maxFilesize(5 * 1024 * 1024) // 5MB limit
             ->useFallbackUrl('/images/color-placeholder.jpg');
     }
 
@@ -46,7 +47,7 @@ class ProductColor extends Model implements HasMedia
         ->addMediaConversion('thumb')
         ->width(150)
         ->height(150) // Add height for consistent aspect ratio
-        ->fit('crop', 150, 150) // Better control over cropping
+        // ->fit('crop', 150, 150) // Better control over cropping
         ->format('webp')
         ->quality(80)
         ->nonQueued(); // Keep this for immediate availability
@@ -55,7 +56,7 @@ class ProductColor extends Model implements HasMedia
         ->addMediaConversion('medium')
         ->width(400)
         ->height(400)
-        ->fit('contain', 400, 400) // Maintains aspect ratio
+        // ->fit('contain', 400, 400) // Maintains aspect ratio
         ->format('webp')
         ->quality(85); // Slightly higher quality for main product view
      

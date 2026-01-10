@@ -18,13 +18,15 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->decimal('base_price', 10, 2);
-            // $table->decimal('compare_price', 10, 2)->nullable();
-            $table->string('sku')->unique()->nullable();
-            // $table->integer('quantity')->default(0);
+            $table->string('sku')->unique()->nullable();     
             $table->string('image')->nullable();
-            // $table->json('images')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->boolean('is_featured')->default(false);
+            $table->boolean('has_discount')->default(false);
+            $table->enum('discount_type', ['percentage', 'fixed'])->nullable();
+            $table->decimal('discount_value', 10, 2)->nullable();
+            $table->timestamp('discount_starts_at')->nullable();
+            $table->timestamp('discount_ends_at')->nullable();
+            $table->boolean('free_shipping')->default(false);
             $table->timestamps();
         });
     }

@@ -98,12 +98,13 @@ class ProductForm extends Component
 
     public function loadProductData()
     {
+        $this->getCategories();
         $this->name = $this->product->name;
         $this->description = $this->product->description;
         $this->base_price = $this->product->base_price;
         $this->sku = $this->product->sku;
         $this->is_active = $this->product->is_active;
-        $this->division = $this->product->categories->first()->division->id;
+        $this->division = $this->product->category->divisions()->first()->id;
         $this->category_id = $this->product->category->id;
 
         foreach ($this->product->colors as $index => $color) {
@@ -188,20 +189,25 @@ class ProductForm extends Component
 
             // Handle main image
             if ($this->main_image) {
-                $this->product->clearMediaCollection('main_image');
-                $tempPath = $this->main_image->store('site-images', 's3');
+                 $this->product->clearMediaCollection('main_image');
+                // $tempPath = $this->main_image->store('product', 's3');
 
 
                 // Step 2: Copy from S3 to media library on S3
-                $this->product->addMediaFromDisk($tempPath, 's3')
+                // $this->product->addMediaFromDisk($tempPath, 's3')
 
-                    ->toMediaCollection('main-image');
+                // ->toMediaCollection('main_image');
 
                 // Step 3: Clean up temp file
-                Storage::disk('s3')->delete($tempPath);
+                // Storage::disk('s3')->delete($tempPath);
                 // $this->product->addMedia($this->main_image->getRealPath())
                 //     ->usingFileName($this->main_image->getClientOriginalName())
                 //     ->toMediaCollection('main_image');
+
+                // Option 1: Direct upload (Recommended)
+                $this->product->addMedia($this->main_image->getRealPath())
+                    ->usingFileName($this->main_image->hashName())
+                    ->toMediaCollection('main_image', 's3');
             }
 
             // Handle colors
@@ -228,10 +234,13 @@ class ProductForm extends Component
                 if (isset($validated['colorImages'][$index]['images']) && $validated['colorImages'][$index]['images']) {
                     $color->clearMediaCollection('color_images');
                     foreach ($validated['colorImages'][$index]['images'] as $image) {
-                        $tempPath = $image->store('site-images', 's3');
-                        $color->addMediaFromDisk($tempPath, 's3')
-                            ->toMediaCollection('color_images');
-                        Storage::disk('s3')->delete($tempPath);
+                        // $tempPath = $image->store('product/colors', 's3');
+                        // $color->addMediaFromDisk($tempPath, 's3')
+                        //     ->toMediaCollection('color_images');
+                        // Storage::disk('s3')->delete($tempPath);
+                        $color->addMedia($image->getRealPath())
+                            ->usingFileName($image->hashName())
+                            ->toMediaCollection('color_images', 's3');
                     }
                 }
 

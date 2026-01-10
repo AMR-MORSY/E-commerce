@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Admin\DiscountManager;
 use App\Models\Order;
 use App\Models\Product;
 use App\Livewire\Checkout;
@@ -29,6 +30,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/products', ProductIndex::class)->name('products.index');
     Route::get('/products/create', ProductForm::class)->name('products.create');
     Route::get('/products/{productId}/edit', ProductForm::class)->name('products.edit');
+    Route::get('products/discountManager',DiscountManager::class)->name('products.discount.manager');
 });
 
 // Authentication routes
@@ -59,6 +61,8 @@ Route::post('/login', function (Request $request) {
 
                 $cartItem = $user->cartItems()
                     ->where('product_id', $item['product_id'])
+                    ->where('product_size_id',$item['product_size_id'])
+                    ->where('product_color_id',$item['product_color_id'])
                     ->first();
 
                 $quantityToAdd = (int) ($item['quantity'] ?? 1);
@@ -66,9 +70,12 @@ Route::post('/login', function (Request $request) {
                 if ($cartItem) {
                     $cartItem->increment('quantity', $quantityToAdd);
                 } else {
+                    dd($sessionCart);
                     $user->cartItems()->create([
                         'product_id' => $item['product_id'],
                         'quantity' => $quantityToAdd,
+                        'product_color_id'=>$item['product_color_id'],
+                        'product_size_id'=>$item['product_size_id']
                     ]);
                 }
             }

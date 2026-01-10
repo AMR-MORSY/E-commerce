@@ -11,6 +11,8 @@ class CartItem extends Model
         'user_id',
         'product_id',
         'quantity',
+        'product_color_id',
+        'product_size_id'
     ];
 
     protected $casts = [

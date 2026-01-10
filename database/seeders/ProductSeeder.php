@@ -87,7 +87,7 @@ class ProductSeeder extends Seeder
             'description' => 'Premium quality 100% cotton t-shirt, perfect for everyday wear',
             'base_price' => 29.99,
             'is_active' => true,
-            'is_featured' => false,
+         
             'category_id' => 2,
             'slug' => Str::slug('Classic Cotton T-Shirt'),
             'sku' => $this->skuGenerator->generate(
@@ -138,7 +138,7 @@ class ProductSeeder extends Seeder
             'description' => 'Warm and cozy fleece hoodie with adjustable drawstring',
             'base_price' => 59.99,
             'is_active' => true,
-            'is_featured' => false,
+         
             'category_id' => 2,
             'slug' => Str::slug( 'Comfort Fleece Hoodie'),
             'sku' => $this->skuGenerator->generate(
@@ -176,7 +176,7 @@ class ProductSeeder extends Seeder
             'description' => 'Stylish slim fit jeans with stretch fabric for comfort',
             'base_price' => 79.99,
             'is_active' => true,
-            'is_featured' => false,
+         
             'category_id' => 2,
             'slug' => Str::slug( 'Slim Fit Denim Jeans'),
             'sku' => $this->skuGenerator->generate(
@@ -224,7 +224,7 @@ class ProductSeeder extends Seeder
             'description' => 'Classic polo shirt with premium cotton blend',
             'base_price' => 39.99,
             'is_active' => true,
-            'is_featured' => false,
+         
             'category_id' => 2,
             'slug' => Str::slug( 'Premium Polo Shirt'),
             'sku' => $this->skuGenerator->generate(
@@ -263,7 +263,7 @@ class ProductSeeder extends Seeder
             'description' => 'Comfortable athletic sweatpants with elastic waistband',
             'base_price' => 44.99,
             'is_active' => true,
-            'is_featured' => false,
+         
             'category_id' => 2,
             'slug' => Str::slug('Athletic Sweatpants'),
             'sku' => $this->skuGenerator->generate(

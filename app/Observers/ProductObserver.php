@@ -25,11 +25,14 @@ class ProductObserver
     {
         
         if (empty($product->sku)) {
-            $product->sku = $this->skuGenerator->generate(
+            // dd($product->category->code);
+            $sku= $this->skuGenerator->generate(
                 name: $product->name,
                 categoryCode: $product->category->code ?? null,
                 maxAttempts:10 // Assuming relationship exists
             );
+
+            $product->update(['sku'=>$sku]);
         }
 
     }

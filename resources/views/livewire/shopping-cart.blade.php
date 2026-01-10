@@ -14,11 +14,12 @@
                         @endphp
                         <div
                             class="p-6 flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
-                            {{-- <div class="flex-shrink-0">
+                            <div class="flex-shrink-0">
                                 <div class="h-24 w-24 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    @if ($item->image)
-                                        <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}"
+                                    @if ($item->product->colors->find($item->product_color_id)->hasMedia('color_images'))
+                                        <img src="{{$item->product->colors->find($item->product_color_id)->getColorImageUrl('thumb') }}"  alt="{{ $item->product->name }}"
                                             class="h-full w-full object-cover rounded-lg">
+                                           
                                     @else
                                         <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -28,14 +29,18 @@
                                         </svg>
                                     @endif
                                 </div>
-                            </div> --}}
+                                <p class=" mt-5">Color:{{$item->product->colors->find($item->product_color_id)->name}}</p>
+                                <p class=" mt-5">Size:{{$item->product->colors->find($item->product_color_id)->sizes->find($item->product_size_id)->size}}</p>
+                            </div>
 
                             <div class="flex-1 min-w-0">
                                 <h3 class="text-lg font-semibold text-gray-900">{{ $item->product->name }}</h3>
                                 <p class="text-sm text-gray-500">{{ $item->product->category->name }}</p>
                                 <p class="text-lg font-bold text-indigo-600 mt-2">
-                                    ${{ number_format($item->product->price, 2) }}</p>
+                                    ${{ number_format($item->product->base_price, 2) }}</p>
+                                  
                             </div>
+                          
 
                             <div class="flex items-center space-x-4">
                                 <div class="flex items-center border border-gray-300 rounded-lg">
@@ -69,7 +74,7 @@
 
                                 <div class="text-right">
                                     <p class="text-lg font-bold text-gray-900">
-                                        ${{ number_format($item->quantity * $item->product->price, 2) }}</p>
+                                        ${{ number_format($item->quantity * $item->product->base_price, 2) }}</p>
                                 </div>
                                 @auth
                                     <button wire:click="removeItem({{ $item->id }})"
