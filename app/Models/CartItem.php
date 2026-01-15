@@ -2,26 +2,29 @@
 
 namespace App\Models;
 
+use App\Models\Cart;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CartItem extends Model
 {
     protected $fillable = [
-        'user_id',
+        'cart_id',
         'product_id',
         'quantity',
         'product_color_id',
-        'product_size_id'
+        'product_size_id',
+        'price'
     ];
 
     protected $casts = [
         'quantity' => 'integer',
+        'price' => 'decimal:2'
     ];
 
-    public function user(): BelongsTo
+    public function cart(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Cart::class);
     }
 
     public function product(): BelongsTo

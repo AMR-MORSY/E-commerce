@@ -3,10 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Cart;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
  * @method HasMany cartItems()
@@ -56,9 +57,9 @@ class User extends Authenticatable
      *
      * @return HasMany
      */
-    public function cartItems(): HasMany
+    public function carts(): HasMany
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(Cart::class);
     }
 
     /**

@@ -1,19 +1,20 @@
 <?php
 
-use App\Livewire\Admin\DiscountManager;
 use App\Models\Order;
 use App\Models\Product;
 use App\Livewire\Checkout;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Livewire\Admin\ProductForm;
 use App\Livewire\ProductList;
+use App\Services\CartService;
 use App\Livewire\ShoppingCart;
 use App\Livewire\AdminProducts;
 use App\Livewire\ProductDetail;
+use App\Livewire\Admin\ProductForm;
 use App\Livewire\Admin\ProductIndex;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Admin\DiscountManager;
 
 Route::get('/', ProductList::class)->name('home');
 Route::get('/product/{slug}', ProductDetail::class)->name('product.detail');
@@ -38,7 +39,7 @@ Route::get('/login', function () {
     return view('auth.login');
 })->middleware('guest')->name('login');
 
-Route::post('/login', function (Request $request) {
+Route::post('/login', function (Request $request, CartService $cartService)  {
     $credentials = $request->validate([
         'email' => 'required|email',
         'password' => 'required',
@@ -47,41 +48,43 @@ Route::post('/login', function (Request $request) {
     if (Auth::attempt($credentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
 
-        // Merge session cart into user cart after login
-        $sessionCart = $request->session()->get('cart', []);
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+        $cart=$cartService->getCart();
 
-        if (!empty($sessionCart) && $user) {
-            foreach ($sessionCart as $item) {
-                $product = Product::find($item['product_id']);
-                if (!$product) {
-                    continue;
-                }
+        // // Merge session cart into user cart after login
+        // $sessionCart = $request->session()->get('cart', []);
+        // /** @var \App\Models\User $user */
+        // $user = Auth::user();
 
-                $cartItem = $user->cartItems()
-                    ->where('product_id', $item['product_id'])
-                    ->where('product_size_id',$item['product_size_id'])
-                    ->where('product_color_id',$item['product_color_id'])
-                    ->first();
+        // if (!empty($sessionCart) && $user) {
+        //     foreach ($sessionCart as $item) {
+        //         $product = Product::find($item['product_id']);
+        //         if (!$product) {
+        //             continue;
+        //         }
 
-                $quantityToAdd = (int) ($item['quantity'] ?? 1);
+        //         $cartItem = $user->cartItems()
+        //             ->where('product_id', $item['product_id'])
+        //             ->where('product_size_id',$item['product_size_id'])
+        //             ->where('product_color_id',$item['product_color_id'])
+        //             ->first();
 
-                if ($cartItem) {
-                    $cartItem->increment('quantity', $quantityToAdd);
-                } else {
-                    dd($sessionCart);
-                    $user->cartItems()->create([
-                        'product_id' => $item['product_id'],
-                        'quantity' => $quantityToAdd,
-                        'product_color_id'=>$item['product_color_id'],
-                        'product_size_id'=>$item['product_size_id']
-                    ]);
-                }
-            }
+        //         $quantityToAdd = (int) ($item['quantity'] ?? 1);
 
-            $request->session()->forget('cart');
-        }
+        //         if ($cartItem) {
+        //             $cartItem->increment('quantity', $quantityToAdd);
+        //         } else {
+        //             dd($sessionCart);
+        //             $user->cartItems()->create([
+        //                 'product_id' => $item['product_id'],
+        //                 'quantity' => $quantityToAdd,
+        //                 'product_color_id'=>$item['product_color_id'],
+        //                 'product_size_id'=>$item['product_size_id']
+        //             ]);
+        //         }
+        //     }
+
+        //     $request->session()->forget('cart');
+        // }
 
         return redirect()->intended(route('home'));
     }
@@ -102,7 +105,7 @@ Route::get('/register', function () {
     return view('auth.register');
 })->middleware('guest')->name('register');
 
-Route::post('/register', function (Request $request) {
+Route::post('/register', function (Request $request, CartService $cartService) {
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
@@ -117,34 +120,36 @@ Route::post('/register', function (Request $request) {
 
     Auth::login($user);
 
-    // Merge session cart into user cart after registration/login
-    $sessionCart = $request->session()->get('cart', []);
+    // // Merge session cart into user cart after registration/login
+    // $sessionCart = $request->session()->get('cart', []);
 
-    if (!empty($sessionCart)) {
-        foreach ($sessionCart as $item) {
-            $product = Product::find($item['product_id']);
-            if (!$product) {
-                continue;
-            }
+    // if (!empty($sessionCart)) {
+    //     foreach ($sessionCart as $item) {
+    //         $product = Product::find($item['product_id']);
+    //         if (!$product) {
+    //             continue;
+    //         }
 
-            $cartItem = $user->cartItems()
-                ->where('product_id', $item['product_id'])
-                ->first();
+    //         $cartItem = $user->cartItems()
+    //             ->where('product_id', $item['product_id'])
+    //             ->first();
 
-            $quantityToAdd = (int) ($item['quantity'] ?? 1);
+    //         $quantityToAdd = (int) ($item['quantity'] ?? 1);
 
-            if ($cartItem) {
-                $cartItem->increment('quantity', $quantityToAdd);
-            } else {
-                $user->cartItems()->create([
-                    'product_id' => $item['product_id'],
-                    'quantity' => $quantityToAdd,
-                ]);
-            }
-        }
+    //         if ($cartItem) {
+    //             $cartItem->increment('quantity', $quantityToAdd);
+    //         } else {
+    //             $user->cartItems()->create([
+    //                 'product_id' => $item['product_id'],
+    //                 'quantity' => $quantityToAdd,
+    //             ]);
+    //         }
+    //     }
 
-        $request->session()->forget('cart');
-    }
+    //     $request->session()->forget('cart');
+    // }
+
+    $cart=$cartService->getCart();
 
     return redirect()->route('home');
 });

@@ -32,7 +32,8 @@
                 @foreach ($products as $product)
                     <div class="card bg-base-100  shadow-sm">
                         <a href="{{ route('product.detail', $product->slug) }}">
-                            <div class="relative w-full aspect-square bg-gray-200 flex items-center justify-center overflow-hidden">
+                            <div
+                                class="relative w-full aspect-square bg-gray-200 flex items-center justify-center overflow-hidden">
                                 @if ($product->hasMedia('main_image'))
                                     <img src="{{ $product->getFirstMediaUrl('main_image', 'medium') }}"
                                         alt="{{ $product->name }}" class="w-full h-full object-cover">
@@ -51,19 +52,42 @@
                                 <h2 class="card-title">{{ $product->name }}</h2>
                             </a>
                             <p class="text-sm text-gray-500 mb-2">{{ $product->category->name }}</p>
-                            <div class="flex items-center justify-between mb-3">
+                            {{-- <div class="flex items-center justify-between mb-3">
                                 <div>
                                     <span class="text-xl font-bold">${{ number_format($product->getFinalPrice(), 2) }}</span>
-                                    {{-- @if ($product->compare_price)
-                                        <span
-                                            class="text-sm line-through ml-2">${{ number_format($product->compare_price, 2) }}</span>
-                                    @endif --}}
+                                  
                                 </div>
+                            </div> --}}
+                            <div class="flex items-center gap-4 mb-2">
+                                @if ($product->has_discount)
+                                    <!-- Discounted Price -->
+                                    <div class="text-xl font-bold text-neutral">
+                                        EGP {{ number_format($product->getFinalPrice(), 2) }}
+                                    </div>
+                                    <!-- Original Price -->
+                                    <div class="text-xl text-neutral line-through">
+                                         {{ number_format($product->base_price, 2) }}
+                                    </div>
+                                    <!-- Discount Badge -->
+
+                                    <div class="bg-neutral text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                        -{{ $product->getDiscountPercentage() }}%
+                                    </div>
+                                @else
+                                    {{-- <div class="text-3xl font-bold text-blue-600">
+                                        ${{ number_format($discountedPrice, 2) }}
+                                    </div> --}}
+
+                                    <div class="text-xl font-bold text-neutral">
+                                     EGP {{ number_format($product->base_price, 2) }}
+                                    </div>
+                                @endif
                             </div>
                             <p class="text-sm mb-3 line-clamp-2">{{ Str::limit($product->description, 100) }}</p>
                             <div class="flex items-center justify-between card-actions">
-                                <span class="text-sm {{ $product->getTotalStockAttribute() > 0 ? 'text-green-600' : 'text-red-600' }}">
-                                    {{$product->getTotalStockAttribute() > 0 ? 'In Stock' : 'Out of Stock' }}
+                                <span
+                                    class="text-sm {{ $product->getTotalStockAttribute() > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $product->getTotalStockAttribute() > 0 ? 'In Stock' : 'Out of Stock' }}
                                 </span>
                                 {{-- <button wire:click="addToCart({{ $product->id }})"
                                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $product->quantity == 0 ? 'opacity-50 cursor-not-allowed' : '' }}"

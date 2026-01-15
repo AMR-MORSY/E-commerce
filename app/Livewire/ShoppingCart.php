@@ -7,29 +7,42 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\CartItem;
 use App\Models\ProductSize;
+use Livewire\Attributes\On;
+use App\Services\CartService;
 use Livewire\Attributes\Layout;
 
 #[Layout('components.layouts.app')]
 class ShoppingCart extends Component
 {
-    // public $total;
+    public $isDrawer = false;
+    public $cartItems;
+
+    public function mount($isDrawer = false)
+    {
+        $this->isDrawer = $isDrawer;
+        $this->loadCart();
+    }
+
+    public function loadCart()
+    {
+        // Your existing cart loading logic
+        $cartService = app(CartService::class);
+        $cart=$cartService->getCart();
+        $this->cartItems=$cart->items()->get();
+      
+    }
+    
     public function removeItem($cartItemId)
     {
-        if (!auth()->check()) {
-            session()->forget('cart.' . $cartItemId);
-            session()->flash('message', 'Item removed from cart!');
-            return redirect()->route('cart');
-
-           
-        }
+        
         CartItem::where('id', $cartItemId)
-            ->where('user_id', auth()->id())
             ->delete();
 
         session()->flash('message', 'Item removed from cart!');
         return redirect()->route('cart');
     }
 
+   
     public function updateQuantity($cartItemId, $quantity)
     {
 
@@ -37,21 +50,9 @@ class ShoppingCart extends Component
             return;
         }
 
-        if (!auth()->check()) {
-            $cart = session()->get('cart', []);
-
-            if (isset($cart[$cartItemId])) {
-                $cart[$cartItemId]['quantity'] = $quantity;
-                session()->put('cart', $cart);
-                session()->flash('message', 'Cart updated!');
-                $this->dispatch('cart-updated');
-            }
-
-            return;
-        }
+       
 
         CartItem::where('id', $cartItemId)
-            ->where('user_id', auth()->id())
             ->update(['quantity' => $quantity]);
 
         session()->flash('message', 'Cart updated!');
@@ -70,20 +71,12 @@ class ShoppingCart extends Component
         
     }
 
-    public function getTotalProperty()
+    public function getTotalProperty(CartService $cartService)
     {
 
-        if (!auth()->check()) {
-            $cartItems = session()->get('cart', []);
-          
-            return  array_reduce( $cartItems, function($carry, $item) {
-                return $carry + ($item['quantity'] * $this->getProductFinalPrice($item['product']['id'],$item['product_size_id']) );
-            }, 0);
-        }
-
-        /** @var \App\Models\User $user */
-        $user = auth()->user();
-        return $user->cartItems()
+      
+        $cart=$cartService->getCart();
+        return $cart->Items()
             ->with('product')
             ->get()
             ->sum(function ($item) {
@@ -91,23 +84,23 @@ class ShoppingCart extends Component
             });
     }
 
+    #[On ('cart-updated')]
+
+    public function cartUpdated()
+    {
+        $cartService = app(CartService::class);
+        $cart=$cartService->getCart();
+        $this->cartItems=$cart->items()->get();
+
+    }
+
     public function render()
     {
-        if (!auth()->check()) {
-            $cartItems = session()->get('cart', []);
+       
+        // $cartService = app(CartService::class);
+        // $cart=$cartService->getCart();
+        // $cartItems=$cart->items()->get();
 
-            return view('livewire.shopping-cart', [
-                'cartItems' => $cartItems,
-            ]);
-        }
-        /** @var \App\Models\User $user */
-        $user = auth()->user();
-        $cartItems = $user->cartItems()
-            ->with('product.category')
-            ->get();
-
-        return view('livewire.shopping-cart', [
-            'cartItems' => $cartItems,
-        ]);
+        return view('livewire.shopping-cart');
     }
 }

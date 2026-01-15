@@ -6,6 +6,7 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\ProductSize;
 use App\Models\ProductColor;
+use App\Services\CartService;
 use Livewire\Attributes\Layout;
 
 #[Layout('components.layouts.app')]
@@ -22,8 +23,14 @@ class ProductDetail extends Component
 
     public  $productFound = false;
 
-    public function mount($slug)
+
+    public $drawerShow=false;
+
+    // public $cartService;
+
+    public function mount( $slug)
     {
+        // $this->cartService=$cartService;
         $this->product = Product::where('slug', $slug)
             ->where('is_active', true)
             ->with(['colors.sizes', 'colors.media'])
@@ -91,7 +98,7 @@ class ProductDetail extends Component
         }
     }
 
-    public function addToCart()
+    public function addToCart(CartService $cartService)
     {
 
         if (!$this->selectedColor || !$this->selectedSize) {
@@ -104,65 +111,71 @@ class ProductDetail extends Component
             return;
         }
 
-        if (!auth()->check()) {
-            // Store cart items in session for guests
+        $cartItem=$cartService-> addItem($this->product,$this->selectedColor->id,$this->selectedSize->id,$this->quantity);
+        // session()->flash('message', 'Product added to cart!');
+        $this->drawerShow=true;
+        $this->dispatch("cart-updated");
+        // return redirect()->route('product.detail', $this->product->slug);
+
+        // if (!auth()->check()) {
+        //     // Store cart items in session for guests
 
 
-            $cart = session()->get('cart', []);
-
-
-
-            $cart = array_map(function ($item) { //////////updating the product's quantity if user selected the same product'color and size
-                if ($item['product_id'] == $this->product->id && $item['product_color_id'] == $this->selectedColor->id && $item['product_size_id'] == $this->selectedSize->id) {
-                    $this->productFound = true;
-                    $item['quantity'] = $item['quantity'] + $this->quantity;
-                }
-                return $item;
-            }, $cart);
-
-            if (!$this->productFound) //////////creating another product
-            {
-                $cart[] =  [
-                    'product_id' => $this->product->id,
-                    'quantity' => $this->quantity,
-                    'product_color_id' => $this->selectedColor->id,
-                    'product_size_id' => $this->selectedSize->id,
-                    "product" => $this->product,
-                ];
-            }
+        //     $cart = session()->get('cart', []);
 
 
 
-            session()->flash('message', 'Product added to cart! You can review it after logging in.');
+        //     $cart = array_map(function ($item) { //////////updating the product's quantity if user selected the same product'color and size
+        //         if ($item['product_id'] == $this->product->id && $item['product_color_id'] == $this->selectedColor->id && $item['product_size_id'] == $this->selectedSize->id) {
+        //             $this->productFound = true;
+        //             $item['quantity'] = $item['quantity'] + $this->quantity;
+        //         }
+        //         return $item;
+        //     }, $cart);
+
+        //     if (!$this->productFound) //////////creating another product
+        //     {
+        //         $cart[] =  [
+        //             'product_id' => $this->product->id,
+        //             'quantity' => $this->quantity,
+        //             'product_color_id' => $this->selectedColor->id,
+        //             'product_size_id' => $this->selectedSize->id,
+        //             "product" => $this->product,
+        //         ];
+        //     }
 
 
 
-            session()->put('cart', $cart);
+        //     session()->flash('message', 'Product added to cart! You can review it after logging in.');
+
+
+
+        //     session()->put('cart', $cart);
 
 
 
 
 
-            return redirect()->route('product.detail', $this->product->slug);
-        }
-        /** @var \App\Models\User $user */
-        $user = auth()->user();
-        $cartItem = $user->cartItems()->where('product_id', $this->product->id)->where('product_color_id', $this->selectedColor->id)->where('product_size_id', $this->selectedSize->id)->first();
+        //     return redirect()->route('product.detail', $this->product->slug);
+        // }
+        // /** @var \App\Models\User $user */
+        // $user = auth()->user();
+        // $cartItem = $user->cartItems()->where('product_id', $this->product->id)->where('product_color_id', $this->selectedColor->id)->where('product_size_id', $this->selectedSize->id)->first();
 
-        if ($cartItem) {
-            $cartItemQuantity = $cartItem->quantity;
-            $cartItem->update(['quantity' => $cartItemQuantity + $this->quantity]);
-            session()->flash('message', 'Product quantity updated in cart!');
-        } else {
-            $user->cartItems()->create([
-                'product_id' => $this->product->id,
-                'quantity' => $this->quantity,
-                'product_color_id' => $this->selectedColor->id,
-                'product_size_id' => $this->selectedSize->id,
-            ]);
-            session()->flash('message', 'Product added to cart!');
-        }
-        return redirect()->route('product.detail', $this->product->slug);
+        // if ($cartItem) {
+        //     $cartItemQuantity = $cartItem->quantity;
+        //     $cartItem->update(['quantity' => $cartItemQuantity + $this->quantity]);
+        //     session()->flash('message', 'Product quantity updated in cart!');
+        // } else {
+        //     $user->cartItems()->create([
+        //         'product_id' => $this->product->id,
+        //         'quantity' => $this->quantity,
+        //         'product_color_id' => $this->selectedColor->id,
+        //         'product_size_id' => $this->selectedSize->id,
+        //     ]);
+        //     session()->flash('message', 'Product added to cart!');
+        // }
+        // return redirect()->route('product.detail', $this->product->slug);
     }
 
     public function getCurrentImages()
@@ -188,7 +201,7 @@ class ProductDetail extends Component
     /**
      * a computed property returns the final price after applying the discount as well as the size price adjustment
      */
-    public function getCurrentPrice()
+    public function getDiscountedPrice()
     {
         // $basePrice = $this->product->base_price;
 
@@ -218,7 +231,7 @@ class ProductDetail extends Component
     {
         return view('livewire.product-detail', [
             'currentImages' => $this->getCurrentImages(),
-            'currentPrice' => $this->getCurrentPrice(),
+            'discountedPrice' => $this->getDiscountedPrice(),
             'originalPrice' => $this->getOriginalPrice()
         ]);
     }

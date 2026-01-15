@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="cupcake">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="lemonade">
 
 <head>
     <meta charset="utf-8">
@@ -11,9 +11,7 @@
     @livewireStyles
 </head>
 
-@php
-    $user = auth()->user();
-@endphp
+
 
 <body class="antialiased bg-gray-50">
     <nav class="bg-white shadow-lg">
@@ -29,18 +27,16 @@
                             Products
                         </a>
                         @auth
-                            {{-- <a href="{{ route('admin.products') }}"
+                          
+                            <a href="{{ route('admin.products.index') }}"
                                 class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 Admin
-                            </a> --}}
-                            <a href="{{ route('admin.products.index') }}"
-                            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            Admin
-                        </a>
+                            </a>
                         @endauth
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <livewire:cart-icon/>
 
                     @auth
 
@@ -52,23 +48,6 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('cart') }}"
-                            class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
-                                </path>
-                            </svg>
-                            Cart
-                            <span id="cart-count"
-                                class="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                @session('cart')
-                                    {{ count($value) }}
-                                @else
-                                    0
-                                @endsession
-                            </span>
-                        </a>
                         <a href="{{ route('login') }}"
                             class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Login</a>
                         <a href="{{ route('register') }}"
@@ -80,7 +59,7 @@
     </nav>
 
     <main>
-   
+
         @if (session('message'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative max-w-7xl mx-auto mt-4"
                 role="alert">
