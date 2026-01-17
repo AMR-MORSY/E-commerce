@@ -167,9 +167,6 @@
                         EGP{{ number_format($originalPrice, 2) }}
                     </div>
                     <!-- Discount Badge -->
-                    {{-- <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    -{{ $discountPercentage }}%
-                </div> --}}
                     <div class="bg-neutral text-white px-3 py-1 rounded-full text-sm font-semibold">
                         -{{ $product->getDiscountPercentage() }}%
                     </div>

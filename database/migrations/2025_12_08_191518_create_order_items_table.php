@@ -13,17 +13,25 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_color_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_size_id')->constrained()->onDelete('cascade');  
-            // $table->string('product_name');
-            $table->decimal('price', 10, 2);
+            $table->foreignId('order_id')->index()->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->index()->constrained()->onDelete('cascade');
+            $table->foreignId('product_color_id')->index()->constrained()->onDelete('cascade');
+            $table->foreignId('product_size_id')->index()->constrained()->onDelete('cascade');
+            $table->string('product_name');
+            $table->string('product_sku');
+            $table->string('color_name');
+            $table->string('size_name');
+            $table->decimal('base_price', 10, 2);
+            $table->decimal('final_price', 10, 2);
+            $table->decimal('discount_amount', 10, 2);
             $table->integer('quantity');
             $table->decimal('total', 10, 2);
             $table->timestamps();
+
+            $table->unique(['order_id','product_id','product_color_id','product_size_id'],'order_items_unique_combo');
         });
     }
+
 
     /**
      * Reverse the migrations.

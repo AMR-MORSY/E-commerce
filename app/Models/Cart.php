@@ -31,4 +31,40 @@ class Cart extends Model
 
         return $token;
     }
+
+    /**
+     * Get total discount
+     */
+    public function getTotalDiscount(): float
+    {
+        return $this->Items()
+        ->with('product')
+        ->get()
+        ->sum(function ($item) {
+          
+            return $item->quantity * $item->discount_amount ;///// already calculated in cartItem model and returned as attribute
+        });
+       
+    }
+
+    /**
+     * Check if cart has free shipping product
+     */
+    public function hasFreeShippingProduct(): bool
+    {
+        return $this->items->contains(function ($item) {
+            return $item->product->free_shipping;
+        });
+    }
+
+     /**
+     * Get cart subtotal
+     */
+    public function getSubtotal(): float
+    {
+        return $this->items->sum(function ($item) {
+            return $item->final_price * $item->quantity;
+        });
+    }
+
 }

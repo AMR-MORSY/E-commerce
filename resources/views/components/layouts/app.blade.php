@@ -13,52 +13,64 @@
 
 
 
-<body>
+<body class="h-full flex flex-col bg-base-200">
 
 
-    <div id="cart_drawer" class="drawer  drawer-end">
+    <div class="drawer  drawer-end flex-1 flex flex-col">
         <input id="my-drawer-1" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content">
+        <div class="drawer-content flex-1 flex flex-col ">
             <!-- Page content here -->
-            <nav class="navbar bg-base-200 shadow-sm px-7">
-                {{-- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8  bg-amber-200"> --}}
-                {{-- <div class="flex justify-between h-16"> --}}
-                <div class="flex navbar-start">
-                    <div class="dropdown md:hidden">
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h7" />
-                            </svg>
-                        </div>
-                        <ul tabindex="-1"
-                            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                            <li><a>Homepage</a></li>
-                            <li><a>Portfolio</a></li>
-                            <li><a>About</a></li>
-                        </ul>
-                    </div>
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="{{ route('home') }}" class="text-2xl font-bold ">ShopHub</a>
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="{{ route('home') }}"
-                            class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                            Products
-                        </a>
-                        @auth
-                        
-                            <a href="{{ route('admin.products.index') }}"
-                                class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Admin
-                            </a>
-                        @endauth
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4 navbar-end">
 
-                   <livewire:cart-icon/>
+
+            {{-- <label for="my-drawer-1" class="btn drawer-button">Open drawer</label> --}}
+        </div>
+        <div class="drawer-side">
+            <label for="my-drawer-1" aria-label="close sidebar" class="drawer-overlay"></label>
+            <ul class="menu bg-base-200 min-h-full w-80 p-4">
+                <!-- Sidebar content here -->
+
+                <livewire:shopping-cart :isDrawer="true" />
+            </ul>
+        </div>
+    </div>
+
+    <div class="drawer">
+        <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col">
+
+            <!-- Navbar -->
+            <div class="navbar bg-neutral w-full px-5">
+                <div class="flex-none lg:hidden">
+                    <label for="my-drawer-2" aria-label="open sidebar" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="inline-block h-6 w-6 stroke-current">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </label>
+                </div>
+                <div class="mx-2 flex-1 px-2"> <a href="{{ route('home') }}" class="text-2xl font-bold ">ShopHub</a>
+                </div>
+                <div class="hidden flex-none lg:block">
+                    <ul class="menu menu-horizontal">
+                        <!-- Navbar menu content here -->
+                        <li> <a href="{{ route('home') }}"
+                                class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Products
+                            </a></li>
+                        <li> @auth
+
+                                <a href="{{ route('admin.products.index') }}"
+                                    class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    Admin
+                                </a>
+                            @endauth
+                        </li>
+                    </ul>
+                </div>
+                <div class="lg:flex items-center space-x-4 hidden navbar-end">
+
+                    <livewire:cart-icon />
                     @auth
 
 
@@ -70,17 +82,32 @@
                             </button>
                         </form>
                     @else
-                       
-                        <a href="{{ route('login') }}"
+                        {{-- <a href="{{ route('login') }}"
                             class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Login</a>
                         <a href="{{ route('register') }}"
-                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a>
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a> --}}
+                        <!-- Simple version without notification badge -->
+                        <div class=" justify-center gap-0.5 items-center flex cursor-pointer">
+                            <!-- Icon container -->
+                            <div class="relative">
+                                <!-- Icon -->
+                                <div class="btn btn-active btn-neutral btn-circle">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 "
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Text label -->
+                            <span class="text-sm text-neutral-content font-medium">My Account</span>
+                        </div>
                     @endauth
                 </div>
+            </div>
 
-            </nav>
-
-            <main>
+            <main class="flex-1">
 
 
                 @if (session('message'))
@@ -101,11 +128,13 @@
 
 
 
-
-                {{ $slot }}
+                <!-- Page Content -->
+                <div class="min-h-[calc(100vh-200px)]"> <!-- Ensures minimum height -->
+                    {{ $slot }}
+                </div>
             </main>
 
-            <footer class="bg-gray-800 text-white ">
+            <footer class="bg-neutral text-white  mt-auto ">
                 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                     <div class="text-center">
                         <p>&copy; {{ date('Y') }} ShopHub. All rights reserved.</p>
@@ -113,16 +142,81 @@
                 </div>
             </footer>
 
+            <div class="navbar block lg:hidden bg-secondary w-full px-5">
+                {{-- <div class="flex-none lg:hidden">
+                    <label for="my-drawer-2" aria-label="open sidebar" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="inline-block h-6 w-6 stroke-current">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </label>
+                </div>
+                <div class="mx-2 flex-1 px-2"> <a href="{{ route('home') }}" class="text-2xl font-bold ">ShopHub</a>
+                </div> --}}
+                {{-- <div class="hidden flex-none lg:block">
+                    <ul class="menu menu-horizontal">
+                        <!-- Navbar menu content here -->
+                        <li> <a href="{{ route('home') }}"
+                                class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Products
+                            </a></li>
+                        <li> @auth
 
-            {{-- <label for="my-drawer-1" class="btn drawer-button">Open drawer</label> --}}
+                                <a href="{{ route('admin.products.index') }}"
+                                    class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    Admin
+                                </a>
+                            @endauth
+                        </li>
+                    </ul>
+                </div> --}}
+                <div class="flex items-center justify-between ">
+
+                    <livewire:cart-icon />
+                    @auth
+
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                                Logout
+                            </button>
+                        </form>
+                    @else
+                        {{-- <a href="{{ route('login') }}"
+                            class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                        <a href="{{ route('register') }}"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a> --}}
+                        <!-- Simple version without notification badge -->
+                        <div class="flex justify-center gap-0.5 items-center cursor-pointer">
+                            <!-- Icon container -->
+                            <div class="relative">
+                                <!-- Icon -->
+                                <div class="btn btn-active btn-secondary btn-circle">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 "
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Text label -->
+                            <span class="text-sm text-secondary-content font-medium">My Account</span>
+                        </div>
+                    @endauth
+                </div>
+            </div>
+
         </div>
         <div class="drawer-side">
-            <label for="my-drawer-1" aria-label="close sidebar" class="drawer-overlay" onclick="closeDrawer()" ></label>
+            <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
             <ul class="menu bg-base-200 min-h-full w-80 p-4">
                 <!-- Sidebar content here -->
-                {{-- <li><a>Sidebar Item 1</a></li>
-         <li><a>Sidebar Item 2</a></li> --}}
-         <livewire:shopping-cart :isDrawer="true" />
+                <li><a>Sidebar Item 1</a></li>
+                <li><a>Sidebar Item 2</a></li>
             </ul>
         </div>
     </div>
@@ -134,13 +228,9 @@
         Livewire.on('cart-updated', () => {
             const drawer = document.getElementById('my-drawer-1');
             if (drawer) {
-                drawer.checked=true;
+                drawer.checked = true;
             }
         });
-
-        function closeDrawer() {
-            document.getElementById('my-drawer-4').checked = false;
-        }
     </script>
 </body>
 

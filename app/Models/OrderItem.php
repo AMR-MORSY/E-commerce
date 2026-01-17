@@ -12,13 +12,21 @@ class OrderItem extends Model
         'product_id',
         'product_color_id',
         'product_size_id',
-        'price',
+        'product_name',
+        'product_sku',
+        'color_name',
+        'size_name',
+        'base_price',
+        'discount_amount',
+        'final_price',
         'quantity',
         'total',
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'base_price' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'final_price' => 'decimal:2',
         'quantity' => 'integer',
         'total' => 'decimal:2',
     ];
@@ -31,5 +39,15 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function productColor(): BelongsTo
+    {
+        return $this->belongsTo(ProductColor::class);
+    }
+
+    public function productSize(): BelongsTo
+    {
+        return $this->belongsTo(ProductSize::class);
     }
 }

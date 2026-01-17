@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->index()->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('slug')->unique();
-            $table->text('description')->nullable();
+            $table->string('description',500);
             $table->decimal('base_price', 10, 2);
-            $table->string('sku')->unique()->nullable();     
+            $table->string('sku')->unique()->nullable();
             $table->string('image')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('has_discount')->default(false);
@@ -28,6 +28,10 @@ return new class extends Migration
             $table->timestamp('discount_ends_at')->nullable();
             $table->boolean('free_shipping')->default(false);
             $table->timestamps();
+
+            $table->index(['is_active', 'category_id', 'created_at']);
+            $table->index(['name', 'description']);
+            $table->index(['base_price']);
         });
     }
 

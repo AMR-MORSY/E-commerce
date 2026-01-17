@@ -56,20 +56,12 @@ class ShoppingCart extends Component
             ->update(['quantity' => $quantity]);
 
         session()->flash('message', 'Cart updated!');
-        $this->dispatch('cart-updated');
+        $this->dispatch('quantity-updated');
     }
 
-    /**
-     * get the final price including discounts and size price adjustment
-     */
-    protected function getProductFinalPrice($productId,$sizeId)
-    {
-        $product=Product::find($productId);
-        $size=ProductSize::find($sizeId);
+  
 
-        return $product->getFinalPrice($size->price_adjustment);///////product model method
-        
-    }
+   
 
     public function getTotalProperty(CartService $cartService)
     {
@@ -80,26 +72,47 @@ class ShoppingCart extends Component
             ->with('product')
             ->get()
             ->sum(function ($item) {
-                return $item->quantity * $this->getProductFinalPrice($item->product->id,$item->product_size_id) ;
+                return $item->quantity * $item->final_price ;
             });
+    }
+
+    public function getTotalDiscountProperty(CartService $cartService)
+    {
+        $cart=$cartService->getCart();
+
+        return $cart->getTotalDiscount();
+
+    }
+
+    // protected function getCartItems()
+    // {
+    //     $cartService = app(CartService::class);
+    //     $cart=$cartService->getCart();
+    //     $this->cartItems=$cart->items()->get();
+
+
+    // }
+    
+    #[On ('quantity-updated')]
+
+    public function quantityUpdated()
+    {
+        $this->loadCart();
+
     }
 
     #[On ('cart-updated')]
 
     public function cartUpdated()
     {
-        $cartService = app(CartService::class);
-        $cart=$cartService->getCart();
-        $this->cartItems=$cart->items()->get();
-
+        $this->loadCart();
+       
     }
 
     public function render()
     {
        
-        // $cartService = app(CartService::class);
-        // $cart=$cartService->getCart();
-        // $cartItems=$cart->items()->get();
+       
 
         return view('livewire.shopping-cart');
     }

@@ -156,6 +156,19 @@ class Product extends Model implements HasMedia
         return true;
     }
 
+    /**
+     * get Product Color Size adjustment price
+     */
+
+     public function getSizeAdjustmentPrice(int $colorId, int $sizeId):float
+     {
+         $productColor=$this->colors()->where('id',$colorId)->first();
+         $productSize=$productColor->sizes()->where('id',$sizeId)->first();
+
+         return $productSize->price_adjustment;
+
+     }
+
       /**
      * Get final price after discount
      */

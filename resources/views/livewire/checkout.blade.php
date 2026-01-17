@@ -266,7 +266,7 @@
                                     @enderror
                                 </div>
 
-                                <div class="form-control">
+                                {{-- <div class="form-control">
                                     <label class="label">
                                         <span class="label-text font-semibold">Postal Code <span
                                                 class="text-error">*</span></span>
@@ -278,7 +278,7 @@
                                             <span class="label-text-alt text-error">{{ $message }}</span>
                                         </label>
                                     @enderror
-                                </div>
+                                </div> --}}
                             </div>
 
                             <!-- Country -->
@@ -290,12 +290,12 @@
                                 <select wire:model="shipping_country"
                                     class="select select-bordered w-full focus:select-primary">
                                     <option disabled selected>Select your country</option>
-                                    <option value="US">United States</option>
-                                    <option value="CA">Canada</option>
+                                    <option value="EGP">EGYPT</option>
+                                    {{-- <option value="CA">Canada</option>
                                     <option value="UK">United Kingdom</option>
                                     <option value="AU">Australia</option>
                                     <option value="DE">Germany</option>
-                                    <option value="FR">France</option>
+                                    <option value="FR">France</option> --}}
                                 </select>
                                 @error('shipping_country')
                                     <label class="label">
@@ -415,14 +415,14 @@
                                         <div class="flex items-center justify-between mt-1">
                                             <div class="text-xs text-base-content opacity-70">
                                                 <span
-                                                    class="badge badge-xs mr-1">{{ $item->product->colors->find($item->product_color_id)->name }}</span>
+                                                    class="badge badge-xs mr-1">{{ $item->productColor->name }}</span>
                                                 <span
-                                                    class="badge badge-xs">{{ $item->product->colors->find($item->product_color_id)->sizes->find($item->product_size_id)->size }}</span>
+                                                    class="badge badge-xs">{{ $item->productSize->size }}</span>
                                             </div>
                                             <span class="text-xs font-medium">×{{ $item->quantity }}</span>
                                         </div>
                                         <p class="text-sm font-semibold mt-1">
-                                            ${{ number_format($item->quantity * $item->product->price, 2) }}
+                                            EGP {{ number_format($item->line_total, 2) }}
                                         </p>
                                     </div>
                                 </div>
@@ -433,19 +433,19 @@
                         <div class="space-y-3 border-t border-base-300 pt-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-base-content">Subtotal</span>
-                                <span class="font-medium">${{ number_format($this->subtotal, 2) }}</span>
+                                <span class="font-medium">EGP {{ number_format($this->subtotal, 2) }}</span>
                             </div>
 
-                            <div class="flex justify-between items-center">
+                            {{-- <div class="flex justify-between items-center">
                                 <span class="text-base-content">Tax (10%)</span>
                                 <span class="font-medium">${{ number_format($this->tax, 2) }}</span>
-                            </div>
+                            </div> --}}
 
                             <div class="flex justify-between items-center">
                                 <span class="text-base-content">Shipping</span>
                                 <span class="font-medium">
                                     @if ($this->shipping > 0)
-                                        ${{ number_format($this->shipping, 2) }}
+                                        EGP {{ number_format($this->shipping, 2) }}
                                     @else
                                         <span class="text-success">Free</span>
                                     @endif
@@ -459,7 +459,7 @@
                                         <span class="label-text font-medium">Discount Code</span>
                                     </label>
                                     <div class="join w-full">
-                                        <input type="text" placeholder="SUMMER2024"
+                                        <input type="text" placeholder="SUMMER2024" wire:model='coupon'
                                             class="input input-bordered join-item flex-1 focus:input-primary">
                                         <button class="btn btn-outline join-item">Apply</button>
                                     </div>
@@ -471,8 +471,8 @@
                                 <span class="text-lg font-bold text-base-content">Total</span>
                                 <div class="text-right">
                                     <span
-                                        class="text-2xl font-bold text-primary">${{ number_format($this->total, 2) }}</span>
-                                    <p class="text-xs text-base-content opacity-70">USD</p>
+                                        class="text-2xl font-bold text-primary">EGP {{ number_format($this->total, 2) }}</span>
+                                    <p class="text-xs text-base-content opacity-70">EGP</p>
                                 </div>
                             </div>
                         </div>
@@ -486,7 +486,7 @@
                                         d="M5 13l4 4L19 7" />
                                 </svg>
                                 <p class="text-xs text-base-content opacity-80">
-                                    <span class="font-semibold">30-Day Return Policy:</span> Easy returns within 30
+                                    <span class="font-semibold">7-Day Return Policy:</span> Easy returns within 7
                                     days of delivery.
                                 </p>
                             </div>
@@ -502,6 +502,7 @@
                                 </svg>
                                 Need Help?
                             </a>
+                            <p class=" text-sm text-secondary">hello</p>
                         </div>
                     </div>
                 </div>

@@ -3,10 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Product;
-use App\Models\Category;
 use Livewire\Component;
+use App\Models\Category;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\Cache;
 
 #[Layout('components.layouts.app')]
 class ProductList extends Component
@@ -27,86 +28,123 @@ class ProductList extends Component
         $this->resetPage();
     }
 
-    public function addToCart($productId)
+
+
+    // Optimize your query
+    public function fetchProducts()
     {
-        if (!auth()->check()) {
-            // Store cart items in session for guests
-            $product = Product::with('category')->findOrFail($productId);
+        return Product::where('is_active', true)
+            ->when($this->categoryFilter, fn($q) => $q->where('category_id', $this->categoryFilter))
+            ->when($this->search, function ($q) {
 
-            $cart = session()->get('cart', []);
+                return $q->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('description', 'like', '%' . $this->search . '%');
+            })
+            ->with('colors.sizes') // Eager loading is good
+            ->orderBy($this->getSortColumn(), $this->getSortDirection())
+            ->paginate(12);
+    }
 
-            if (isset($cart[$productId])) {
-               $cart[$productId]['quantity']++;
-              
-            } else {
-                $cart[$productId] =  [
-                    'product_id' => $productId,
-                    'quantity' => 1,
-                    "product" => $product,
-                ] ;
-            }
+    private function getSortColumn(): string
+    {
+        return match ($this->sortBy) {
+            'price_low', 'price_high' => 'price',
+            'name' => 'name',
+            default => 'created_at' // for 'latest'
+        };
+    }
 
-            session()->put('cart', $cart);
-            session()->flash('message', 'Product added to cart! You can review it after logging in.');
+    /**
+     * Get the sort direction (ascending or descending)
+     */
+    private function getSortDirection(): string
+    {
+        return match ($this->sortBy) {
+            'price_low' => 'asc',  // Low to high
+            'price_high' => 'desc', // High to low
+            'name' => 'asc',        // A to Z
+            'latest' => 'desc',     // Newest first
+            default => 'desc'       // Default to newest first
+        };
+    }
 
-            $this->dispatch('cart-updated');
-
-            return;
-        }
-
-        $product = Product::findOrFail($productId);
-        
-        /** @var \App\Models\User $user */
-        $user = auth()->user();
-        $cartItem = $user->cartItems()->where('product_id', $productId)->first();
-
-        if ($cartItem) {
-            $cartItem->increment('quantity');
-            session()->flash('message', 'Product quantity updated in cart!');
-        } else {
-            $user->cartItems()->create([
-                'product_id' => $productId,
-                'quantity' => 1,
-            ]);
-            session()->flash('message', 'Product added to cart!');
-        }
-
-        $this->dispatch('cart-updated');
+    /**
+     * Get current page from request
+     */
+    private function getPage(): int
+    {
+        return request()->input('page', 1);
     }
 
     public function render()
     {
-        $query = Product::where('is_active', true)
-            ->with('colors.sizes');
 
-        if ($this->search) {
-            $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('description', 'like', '%' . $this->search . '%');
-            });
+
+
+        if (empty($this->search) && empty($this->categoryFilter) && $this->sortBy === 'latest') {
+              // Cache only the default view (homepage)
+            $page = $this->getPage(); // Get current page
+            // if (true) {
+
+                $products = Cache::tags(['products', 'products_list'])->rememberForever(
+                    "products_default_page_{$page}",
+
+                    function () {
+                        return $this->fetchProducts();
+                    }
+                );
+               
+            // } else {
+
+            //     $products = Cache::rememberForever(
+            //        "products_default_page_{$page}",
+            //         function () {
+            //             return $this->fetchProducts();
+            //         }
+
+            //     );
+            // }
+        } else {
+            $products =  $this->fetchProducts();
         }
 
-        if ($this->categoryFilter) {
-            $query->where('category_id', $this->categoryFilter);
-        }
 
-        switch ($this->sortBy) {
-            case 'price_low':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_high':
-                $query->orderBy('price', 'desc');
-                break;
-            case 'name':
-                $query->orderBy('name', 'asc');
-                break;
-            default:
-                $query->latest();
-        }
 
-        $products = $query->paginate(12);
-        // $categories = Category::where('is_active', true)->get();
-        $categories = Category::all();
+
+
+
+
+        // $query = Product::where('is_active', true)
+        //     ->with('colors.sizes');
+
+        // if ($this->search) {
+        //     $query->where(function ($q) {
+        //         $q->where('name', 'like', '%' . $this->search . '%')
+        //             ->orWhere('description', 'like', '%' . $this->search . '%');
+        //     });
+        // }
+
+        // if ($this->categoryFilter) {
+        //     $query->where('category_id', $this->categoryFilter);
+        // }
+
+        // switch ($this->sortBy) {
+        //     case 'price_low':
+        //         $query->orderBy('price', 'asc');
+        //         break;
+        //     case 'price_high':
+        //         $query->orderBy('price', 'desc');
+        //         break;
+        //     case 'name':
+        //         $query->orderBy('name', 'asc');
+        //         break;
+        //     default:
+        //         $query->latest();
+        // }
+
+        // $products = $query->paginate(12);
+        $categories = Category::where('is_active', true)->get();
+        // $categories = Category::all();
 
         return view('livewire.product-list', [
             'products' => $products,

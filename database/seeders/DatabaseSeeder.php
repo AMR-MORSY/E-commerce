@@ -23,9 +23,10 @@ class DatabaseSeeder extends Seeder
             ShippingRuleSeeder::class
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // User::factory()->create([
+        //     'first_name' => 'Test',
+        //     'last_name'=>'user',
+        //     'email' => 'test@example.com',
+        // ]);
     }
 }

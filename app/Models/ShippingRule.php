@@ -28,6 +28,9 @@ class ShippingRule extends Model
     public static function getShippingCostForOrder(float $orderTotal, bool $hasFreeShippingProduct = false): float
     {
         if ($hasFreeShippingProduct) {
+
+          
+           
             return 0;
         }
 
@@ -39,10 +42,13 @@ class ShippingRule extends Model
             ->orderBy('priority', 'desc')
             ->orderBy('min_order_amount', 'desc')
             ->first();
+            // dd($rule);
 
         if (!$rule) {
             return 0;
         }
+
+      
 
         return $rule->is_free ? 0 : $rule->shipping_cost;
     }

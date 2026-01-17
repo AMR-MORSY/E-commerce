@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\Support\Str;
 use App\Services\SkuGenerator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class ProductObserver
 {
@@ -35,6 +36,17 @@ class ProductObserver
             $product->update(['sku'=>$sku]);
         }
 
+        $this->clearProductListCache();
+
+    }
+    private function clearProductListCache(): void
+    {
+       
+       
+            // Clear only specific tags
+            Cache::tags(['products_list'])->flush();
+       
+      
     }
     /**
      * Handle the Product "updating" event.
@@ -49,6 +61,7 @@ class ProductObserver
             // Option 2: Throw exception (strict)
             // throw new \Exception('SKU cannot be modified once set.');
         }
+        $this->clearProductListCache();
     }
 
     /**
@@ -56,7 +69,7 @@ class ProductObserver
      */
     public function deleted(Product $product): void
     {
-        //
+        $this->clearProductListCache();
     }
 
     /**
@@ -64,7 +77,7 @@ class ProductObserver
      */
     public function restored(Product $product): void
     {
-        //
+        $this->clearProductListCache();
     }
 
     /**
@@ -72,6 +85,6 @@ class ProductObserver
      */
     public function forceDeleted(Product $product): void
     {
-        //
+        $this->clearProductListCache();
     }
 }

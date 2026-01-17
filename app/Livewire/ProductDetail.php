@@ -216,7 +216,7 @@ class ProductDetail extends Component
         }
     }
     /**
-     * a computed property returns product base price + selected size price_adjustment
+     * a computed property returns product base price + selected size price_adjustment. computed property value is updating when selected size value get updated
      */
 
     public function getOriginalPrice()

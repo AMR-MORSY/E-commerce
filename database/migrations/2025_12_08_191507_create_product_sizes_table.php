@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_sizes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_color_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_color_id')->index()->constrained()->cascadeOnDelete();
             $table->string('size'); // S, M, L, XL, XXL
             $table->integer('quantity')->default(0);
             $table->decimal('price_adjustment', 10, 2)->default(0);
