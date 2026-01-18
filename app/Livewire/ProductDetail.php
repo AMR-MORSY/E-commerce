@@ -24,7 +24,7 @@ class ProductDetail extends Component
     public  $productFound = false;
 
 
-    public $drawerShow=false;
+    // public $drawerShow=false;
 
     // public $cartService;
 
@@ -111,9 +111,9 @@ class ProductDetail extends Component
             return;
         }
 
-        $cartItem=$cartService-> addItem($this->product,$this->selectedColor->id,$this->selectedSize->id,$this->quantity);
+        $cartItem=$cartService->addItem($this->product,$this->selectedColor->id,$this->selectedSize->id,$this->quantity);
         // session()->flash('message', 'Product added to cart!');
-        $this->drawerShow=true;
+        // $this->drawerShow=true;
         $this->dispatch("cart-updated");
         // return redirect()->route('product.detail', $this->product->slug);
 

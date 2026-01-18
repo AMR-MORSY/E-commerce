@@ -46,7 +46,7 @@
                         <!-- Cart Items List -->
                         <div class="@if(!$isDrawer) divide-y divide-gray-100 bg-base-200 @endif">
                             @foreach ($cartItems as $key => $item)
-                                <div class="@if($isDrawer) bg-base-100 rounded-lg p-4 border border-gray-200 @else p-6 hover:bg-base-100 transition-colors duration-200 @endif">
+                                <div class="@if($isDrawer) bg-base-200 border-b-1 border-accent-content  p-4 @else p-6 hover:bg-base-100 transition-colors duration-200 @endif">
                                     <div class="flex gap-4">
                                         <!-- Product Image -->
                                         <div class="flex-shrink-0">

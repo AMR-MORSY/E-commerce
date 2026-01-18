@@ -16,23 +16,12 @@
 <body class="h-full flex flex-col bg-base-200">
 
 
-    <div class="drawer  drawer-end flex-1 flex flex-col">
-        <input id="my-drawer-1" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content flex-1 flex flex-col ">
-            <!-- Page content here -->
+   
+
+    <livewire:auth.login/>
+    <x-right-side-cart-drawer/>
 
 
-            {{-- <label for="my-drawer-1" class="btn drawer-button">Open drawer</label> --}}
-        </div>
-        <div class="drawer-side">
-            <label for="my-drawer-1" aria-label="close sidebar" class="drawer-overlay"></label>
-            <ul class="menu bg-base-200 min-h-full w-80 p-4">
-                <!-- Sidebar content here -->
-
-                <livewire:shopping-cart :isDrawer="true" />
-            </ul>
-        </div>
-    </div>
 
     <div class="drawer">
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
@@ -87,22 +76,9 @@
                         <a href="{{ route('register') }}"
                             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a> --}}
                         <!-- Simple version without notification badge -->
-                        <div class=" justify-center gap-0.5 items-center flex cursor-pointer">
-                            <!-- Icon container -->
-                            <div class="relative">
-                                <!-- Icon -->
-                                <div class="btn btn-active btn-neutral btn-circle">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 "
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                </div>
-                            </div>
 
-                            <!-- Text label -->
-                            <span class="text-sm text-neutral-content font-medium">My Account</span>
-                        </div>
+                     
+                        <x-my-account-icon navbarDirection="top"/>
                     @endauth
                 </div>
             </div>
@@ -143,34 +119,7 @@
             </footer>
 
             <div class="navbar block lg:hidden bg-secondary w-full px-5">
-                {{-- <div class="flex-none lg:hidden">
-                    <label for="my-drawer-2" aria-label="open sidebar" class="btn btn-square btn-ghost">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            class="inline-block h-6 w-6 stroke-current">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </label>
-                </div>
-                <div class="mx-2 flex-1 px-2"> <a href="{{ route('home') }}" class="text-2xl font-bold ">ShopHub</a>
-                </div> --}}
-                {{-- <div class="hidden flex-none lg:block">
-                    <ul class="menu menu-horizontal">
-                        <!-- Navbar menu content here -->
-                        <li> <a href="{{ route('home') }}"
-                                class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Products
-                            </a></li>
-                        <li> @auth
 
-                                <a href="{{ route('admin.products.index') }}"
-                                    class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                    Admin
-                                </a>
-                            @endauth
-                        </li>
-                    </ul>
-                </div> --}}
                 <div class="flex items-center justify-between ">
 
                     <livewire:cart-icon />
@@ -190,22 +139,12 @@
                         <a href="{{ route('register') }}"
                             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a> --}}
                         <!-- Simple version without notification badge -->
-                        <div class="flex justify-center gap-0.5 items-center cursor-pointer">
-                            <!-- Icon container -->
-                            <div class="relative">
-                                <!-- Icon -->
-                                <div class="btn btn-active btn-secondary btn-circle">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 "
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                </div>
-                            </div>
 
-                            <!-- Text label -->
-                            <span class="text-sm text-secondary-content font-medium">My Account</span>
-                        </div>
+                      
+                        <x-my-account-icon navbarDirection="bottom"/>
+
+
+
                     @endauth
                 </div>
             </div>
@@ -227,6 +166,12 @@
     <script>
         Livewire.on('cart-updated', () => {
             const drawer = document.getElementById('my-drawer-1');
+            if (drawer) {
+                drawer.checked = true;
+            }
+        });
+        Livewire.on('open_login', () => {
+            const drawer = document.getElementById('my-drawer-2');
             if (drawer) {
                 drawer.checked = true;
             }

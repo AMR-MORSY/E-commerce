@@ -4,6 +4,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Livewire\Checkout;
 use Illuminate\Support\Str;
+use App\Livewire\Auth\Login;
 use Illuminate\Http\Request;
 use App\Livewire\ProductList;
 use App\Services\CartService;
@@ -15,6 +16,7 @@ use App\Livewire\Admin\ProductIndex;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Admin\DiscountManager;
+use App\Livewire\Auth\Register;
 
 Route::get('/', ProductList::class)->name('home');
 Route::get('/product/{slug}', ProductDetail::class)->name('product.detail');
@@ -35,64 +37,31 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 });
 
 // Authentication routes
-Route::get('/login', function () {
-    return view('auth.login');
-})->middleware('guest')->name('login');
+Route::get('/login', Login::class)->middleware('guest')->name('login');
 
-Route::post('/login', function (Request $request, CartService $cartService)  {
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+// Route::post('/login', function (Request $request, CartService $cartService)  {
 
-    if (Auth::attempt($credentials, $request->boolean('remember'))) {
-        $request->session()->regenerate();
+  
+//     $credentials = $request->validate([
+//         'email' => 'required|email',
+//         'password' => 'required',
+//     ]);
 
-        $cart=$cartService->getCart();
+//     if (Auth::attempt($credentials, $request->boolean('remember'))) {
+//         $request->session()->regenerate();
 
-        // // Merge session cart into user cart after login
-        // $sessionCart = $request->session()->get('cart', []);
-        // /** @var \App\Models\User $user */
-        // $user = Auth::user();
+//         $cart=$cartService->getCart();
 
-        // if (!empty($sessionCart) && $user) {
-        //     foreach ($sessionCart as $item) {
-        //         $product = Product::find($item['product_id']);
-        //         if (!$product) {
-        //             continue;
-        //         }
+       
 
-        //         $cartItem = $user->cartItems()
-        //             ->where('product_id', $item['product_id'])
-        //             ->where('product_size_id',$item['product_size_id'])
-        //             ->where('product_color_id',$item['product_color_id'])
-        //             ->first();
+//         return redirect()->intended(route('home'));
+//     }
+//     session()->flash('credential-error', 'The provided credentials do not match our records.');
 
-        //         $quantityToAdd = (int) ($item['quantity'] ?? 1);
-
-        //         if ($cartItem) {
-        //             $cartItem->increment('quantity', $quantityToAdd);
-        //         } else {
-        //             dd($sessionCart);
-        //             $user->cartItems()->create([
-        //                 'product_id' => $item['product_id'],
-        //                 'quantity' => $quantityToAdd,
-        //                 'product_color_id'=>$item['product_color_id'],
-        //                 'product_size_id'=>$item['product_size_id']
-        //             ]);
-        //         }
-        //     }
-
-        //     $request->session()->forget('cart');
-        // }
-
-        return redirect()->intended(route('home'));
-    }
-
-    return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
-    ])->onlyInput('email');
-});
+//     return back()->withErrors([
+//         'email' => 'The provided credentials do not match our records.',
+//     ])->onlyInput('email');
+// });
 
 Route::post('/logout', function (Request $request) {
     Auth::logout();
@@ -101,9 +70,7 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('home');
 })->name('logout');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->middleware('guest')->name('register');
+Route::get('/register', Register::class)->middleware('guest')->name('register');
 
 Route::post('/register', function (Request $request, CartService $cartService) {
     $validated = $request->validate([
