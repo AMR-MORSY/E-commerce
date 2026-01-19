@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Admin\DiscountManager;
 use App\Livewire\Auth\Register;
+use App\Livewire\UserDashboard;
+use App\Livewire\UserOrders;
 
 Route::get('/', ProductList::class)->name('home');
 Route::get('/product/{slug}', ProductDetail::class)->name('product.detail');
@@ -34,6 +36,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/products/create', ProductForm::class)->name('products.create');
     Route::get('/products/{productId}/edit', ProductForm::class)->name('products.edit');
     Route::get('products/discountManager',DiscountManager::class)->name('products.discount.manager');
+});
+
+Route::middleware(['auth'])->name('user.')->group(function(){
+    Route::get('/my-account', UserDashboard::class)->name('dashboard');
+    Route::get('/my-account/orders',UserOrders::class)->name('orders');
+
 });
 
 // Authentication routes
@@ -64,6 +72,7 @@ Route::get('/login', Login::class)->middleware('guest')->name('login');
 // });
 
 Route::post('/logout', function (Request $request) {
+   
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();

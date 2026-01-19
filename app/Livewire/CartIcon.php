@@ -35,7 +35,7 @@ class CartIcon extends Component
             $userCart = Cart::where('user_id', $user->id)->first();
             if ($userCart) {
                 $cartItems = $userCart->items();
-                $this->subtotal = $cartItems->getSubtotal();
+                $this->subtotal = $userCart->getSubtotal();
                 $this->cartItemsCount = $cartItems->count();
             }
         }

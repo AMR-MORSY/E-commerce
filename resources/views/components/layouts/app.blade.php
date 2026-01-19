@@ -9,17 +9,30 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            /* background-color: #f9fafb; */
+        }
+        
+      
+    </style>
 </head>
 
 
 
-<body class="h-full flex flex-col bg-base-200">
+<body class="bg-base-100 text-base-content">
 
 
-   
 
-    <livewire:auth.login/>
-    <x-right-side-cart-drawer/>
+
+    @livewire('auth.login', ['currentPageRoute' => Route::currentRouteName(), 'currentPageRouteParams' => Route::current()->parameters()])
+    <x-right-side-cart-drawer />
 
 
 
@@ -28,7 +41,7 @@
         <div class="drawer-content flex flex-col">
 
             <!-- Navbar -->
-            <div class="navbar bg-neutral w-full px-5">
+            <div class="navbar bg-base-200 w-full lg:px-28">
                 <div class="flex-none lg:hidden">
                     <label for="my-drawer-2" aria-label="open sidebar" class="btn btn-square btn-ghost">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -60,26 +73,10 @@
                 <div class="lg:flex items-center space-x-4 hidden navbar-end">
 
                     <livewire:cart-icon />
-                    @auth
 
 
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit"
-                                class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
-                                Logout
-                            </button>
-                        </form>
-                    @else
-                        {{-- <a href="{{ route('login') }}"
-                            class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Login</a>
-                        <a href="{{ route('register') }}"
-                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a> --}}
-                        <!-- Simple version without notification badge -->
+                    <x-my-account-icon navbarDirection="top" />
 
-                     
-                        <x-my-account-icon navbarDirection="top"/>
-                    @endauth
                 </div>
             </div>
 
@@ -105,49 +102,54 @@
 
 
                 <!-- Page Content -->
-                <div class="min-h-[calc(100vh-200px)]"> <!-- Ensures minimum height -->
+                <div class=" min-h-screen"> <!-- Ensures minimum height -->
                     {{ $slot }}
-                </div>
-            </main>
 
-            <footer class="bg-neutral text-white  mt-auto ">
-                <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-                    <div class="text-center">
-                        <p>&copy; {{ date('Y') }} ShopHub. All rights reserved.</p>
+                </div>
+                <footer class="bg-neutral  text-white  mt-auto ">
+                    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                        <div class="text-center">
+                            <p>&copy; {{ date('Y') }} ShopHub. All rights reserved.</p>
+                        </div>
                     </div>
-                </div>
-            </footer>
-
-            <div class="navbar block lg:hidden bg-secondary w-full px-5">
-
-                <div class="flex items-center justify-between ">
-
-                    <livewire:cart-icon />
-                    @auth
+                </footer>
 
 
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit"
-                                class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
-                                Logout
-                            </button>
-                        </form>
-                    @else
-                        {{-- <a href="{{ route('login') }}"
+                <div class="navbar block fixed bottom-0 left-0 right-0 lg:hidden bg-secondary w-full px-5">
+
+                    <div class="flex items-center justify-between ">
+
+                        <livewire:cart-icon />
+                        @auth
+
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                                    Logout
+                                </button>
+                            </form>
+                        @else
+                            {{-- <a href="{{ route('login') }}"
                             class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Login</a>
                         <a href="{{ route('register') }}"
                             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a> --}}
-                        <!-- Simple version without notification badge -->
-
-                      
-                        <x-my-account-icon navbarDirection="bottom"/>
+                            <!-- Simple version without notification badge -->
 
 
+                            <x-my-account-icon navbarDirection="bottom" />
 
-                    @endauth
+
+
+                        @endauth
+                    </div>
                 </div>
-            </div>
+
+
+            </main>
+
+
 
         </div>
         <div class="drawer-side">
