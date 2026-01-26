@@ -1,4 +1,43 @@
 <div>
+    <div class="hero min-h-[50vh]">
+        <div class="hero-overlay bg-secondary"></div>
+        <div class="hero-content text-neutral-content text-center">
+            <div class="max-w-md">
+            
+                <span class="text-rotate text-5xl">
+                    <span class="justify-items-center">
+                      <span>DESIGN</span>
+                      <span>DEVELOP</span>
+                      <span>DEPLOY</span>
+                      <span>SCALE</span>
+                      <span>MAINTAIN</span>
+                      <span>REPEAT</span>
+                    </span>
+                  </span>
+                <p class="mb-5">
+                    Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
+                    quasi. In deleniti eaque aut repudiandae et a id nisi.
+                </p>
+                <button class="btn btn-primary">Get Started</button>
+            </div>
+            <div class="hover-3d">
+               
+                <!-- content -->
+                <figure class="max-w-100 rounded-2xl">
+                  <img src="{{asset('storage/images/sheko.jpg')}}" alt="3D card" />
+                </figure>
+                <!-- 8 empty divs needed for the 3D effect -->
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+        </div>
+    </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900 mb-4">Our Products</h1>
@@ -66,7 +105,7 @@
                                     </div>
                                     <!-- Original Price -->
                                     <div class="text-xl text-neutral line-through">
-                                         {{ number_format($product->base_price, 2) }}
+                                        {{ number_format($product->base_price, 2) }}
                                     </div>
                                     <!-- Discount Badge -->
 
@@ -79,7 +118,7 @@
                                     </div> --}}
 
                                     <div class="text-xl font-bold text-neutral">
-                                     EGP {{ number_format($product->base_price, 2) }}
+                                        EGP {{ number_format($product->base_price, 2) }}
                                     </div>
                                 @endif
                             </div>

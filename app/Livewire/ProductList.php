@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use Livewire\Component;
+
 use App\Models\Category;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
@@ -82,10 +83,9 @@ class ProductList extends Component
 
 
         if (empty($this->search) && empty($this->categoryFilter) && $this->sortBy === 'latest') {
-              // Cache only the default view (homepage)
+             
             $page = $this->getPage(); // Get current page
-            // if (true) {
-
+          
                 $products = Cache::tags(['products', 'products_list'])->rememberForever(
                     "products_default_page_{$page}",
 
@@ -94,16 +94,7 @@ class ProductList extends Component
                     }
                 );
                
-            // } else {
-
-            //     $products = Cache::rememberForever(
-            //        "products_default_page_{$page}",
-            //         function () {
-            //             return $this->fetchProducts();
-            //         }
-
-            //     );
-            // }
+          
         } else {
             $products =  $this->fetchProducts();
         }
@@ -114,38 +105,8 @@ class ProductList extends Component
 
 
 
-        // $query = Product::where('is_active', true)
-        //     ->with('colors.sizes');
-
-        // if ($this->search) {
-        //     $query->where(function ($q) {
-        //         $q->where('name', 'like', '%' . $this->search . '%')
-        //             ->orWhere('description', 'like', '%' . $this->search . '%');
-        //     });
-        // }
-
-        // if ($this->categoryFilter) {
-        //     $query->where('category_id', $this->categoryFilter);
-        // }
-
-        // switch ($this->sortBy) {
-        //     case 'price_low':
-        //         $query->orderBy('price', 'asc');
-        //         break;
-        //     case 'price_high':
-        //         $query->orderBy('price', 'desc');
-        //         break;
-        //     case 'name':
-        //         $query->orderBy('name', 'asc');
-        //         break;
-        //     default:
-        //         $query->latest();
-        // }
-
-        // $products = $query->paginate(12);
-        $categories = Category::where('is_active', true)->get();
-        // $categories = Category::all();
-
+         $categories = Category::where('is_active', true)->get();
+       
         return view('livewire.product-list', [
             'products' => $products,
             'categories' => $categories,

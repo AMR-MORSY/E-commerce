@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Database\Seeders\CitiesSeeder;
+use Database\Seeders\CategorySeeder;
+use Database\Seeders\GovernoratesSeeder;
 use Database\Seeders\ShippingRuleSeeder;
 use Database\Seeders\DivisionCategorySeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -18,9 +21,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            DivisionCategorySeeder::class,
-            ProductSeeder::class,
-            ShippingRuleSeeder::class
+            // CategorySeeder::class,
+            // ProductSeeder::class,
+            // ShippingRuleSeeder::class
+            GovernoratesSeeder::class,
+            CitiesSeeder::class
         ]);
 
         // User::factory()->create([

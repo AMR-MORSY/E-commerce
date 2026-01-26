@@ -19,6 +19,11 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('image')->nullable(); 
             $table->boolean('is_active')->default(true);
+            $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
+            $table->string('full_path')->nullable(); // Store complete path for easy routing
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+            $table->string('meta_keywords')->nullable();
             $table->timestamps();
         });
     }

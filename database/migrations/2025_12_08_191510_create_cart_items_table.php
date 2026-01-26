@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('cart_id')->index()->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->index()->constrained()->onDelete('cascade');
-            $table->foreignId('product_color_id')->index()->constrained()->onDelete('cascade');
-            $table->foreignId('product_size_id')->index()->constrained()->onDelete('cascade');   
+            $table->foreignId('product_color_id')->index()->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('product_size_id')->index()->nullable()->constrained()->onDelete('cascade');   
             $table->integer('quantity')->default(1);
             $table->decimal('price', 10, 2);
             $table->timestamps();
 
             $table->unique(['cart_id','product_id','product_color_id','product_size_id'], 'cart_items_unique_combo');
+            $table->unique(['cart_id','product_id','product_color_id'], 'cart_items_unique_color');
 
            
         });

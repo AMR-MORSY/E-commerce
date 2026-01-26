@@ -175,251 +175,562 @@
 
 
 </div>  --}}
+ {{-- 
+ <div class="max-w-7xl mx-auto py-6 px-4">
+     <div class="bg-white shadow-md rounded-lg p-6">
+         <h2 class="text-2xl font-bold mb-6">
+             {{ $isEdit ? 'Edit Product' : 'Create Product' }}
+         </h2>
 
-<div class="max-w-7xl mx-auto py-6 px-4">
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <h2 class="text-2xl font-bold mb-6">
-            {{ $isEdit ? 'Edit Product' : 'Create Product' }}
-        </h2>
+         <form wire:submit="save">
+             <!-- Basic Information -->
+             <div class="mb-8">
+                 <h3 class="text-lg font-semibold mb-4 border-b pb-2">Basic Information</h3>
 
-        <form wire:submit="save">
-            <!-- Basic Information -->
-            <div class="mb-8">
-                <h3 class="text-lg font-semibold mb-4 border-b pb-2">Basic Information</h3>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                         <label class="block text-sm font-medium mb-1">Product Name *</label>
+                         <input type="text" wire:model="name"
+                             class="w-full border rounded px-3 py-2 @error('name') border-red-500 @enderror">
+                         @error('name')
+                             <span class="text-red-500 text-sm">{{ $message }}</span>
+                         @enderror
+                     </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Product Name *</label>
-                        <input type="text" wire:model="name"
-                            class="w-full border rounded px-3 py-2 @error('name') border-red-500 @enderror">
-                        @error('name')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
+                     <div>
+                         <label class="block text-sm font-medium mb-1">Base Price *</label>
+                         <input type="number" step="0.01" wire:model="base_price"
+                             class="w-full border rounded px-3 py-2 @error('base_price') border-red-500 @enderror">
+                         @error('base_price')
+                             <span class="text-red-500 text-sm">{{ $message }}</span>
+                         @enderror
+                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Base Price *</label>
-                        <input type="number" step="0.01" wire:model="base_price"
-                            class="w-full border rounded px-3 py-2 @error('base_price') border-red-500 @enderror">
-                        @error('base_price')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
+                     <div>
+                         <label class="block text-sm font-medium mb-1">Status</label>
+                         <select wire:model="is_active" class="w-full border rounded px-3 py-2">
+                             <option value="1">Active</option>
+                             <option value="0">Inactive</option>
+                         </select>
+                     </div>
+                 
+                     <div>
+                         <label class="block text-sm font-medium mb-1">Category</label>
+                         <select wire:model="category_id" class="w-full border rounded px-3 py-2">
+                             @foreach ($categories as $category)
+                                 @if ($category->children)
+                                     @foreach ($category->children as $child)
+                                         @if ($child->children)
+                                             @foreach ($child->children as $grandchild)
+                                                 <option value="{{ $grandchild->id }}">—— {{ $grandchild->name }}
+                                                 </option>
+                                             @endforeach
+                                         @else
+                                             <option value="{{ $child->id }}"> {{ $child->name }}</option>
+                                         @endif
+                                     @endforeach
+                                 @else
+                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                 @endif
+                             @endforeach
+                         </select>
+                         @error('category_id')
+                             <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                         @enderror
+                     </div>
+                 </div>
 
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Status</label>
-                        <select wire:model="is_active" class="w-full border rounded px-3 py-2">
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Division</label>
-                        <select wire:model.live="division" class="w-full border rounded px-3 py-2">
-                            @foreach ($divisions as $division)
-                                <option value="{{ $division->id }}">{{ $division->name }}</option>
-                                
-                            @endforeach
-                           
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Category</label>
-                        <select wire:model="category_id" class="w-full border rounded px-3 py-2">
-                           @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                           @endforeach
-                        </select>
-                        @error("category_id")
-                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                    @enderror
-                    </div>
-                </div>
+                 <div class="mt-4">
+                     <label class="block text-sm font-medium mb-1">Description</label>
+                     <textarea wire:model="description" rows="3" class="w-full border rounded px-3 py-2"></textarea>
+                 </div>
 
-                <div class="mt-4">
-                    <label class="block text-sm font-medium mb-1">Description</label>
-                    <textarea wire:model="description" rows="3" class="w-full border rounded px-3 py-2"></textarea>
-                </div>
+                 <div class="mt-4">
+                     <label class="block text-sm font-medium mb-1">Main Product Image</label>
+                     <input type="file" wire:model="main_image" accept="image/*"
+                         class="w-full border rounded px-3 py-2">
+                     @if ($main_image)
+                         <div class="mt-2">
+                             <img src="{{ $main_image->temporaryUrl() }}" class="w-32 h-32 object-cover rounded">
+                         </div>
+                     @elseif ($isEdit && $product?->hasMedia('main_image'))
+                         <div class="mt-2">
+                             <img src="{{ $product->getFirstMediaUrl('main_image') }}"
+                                 class="w-32 h-32 object-cover rounded">
+                         </div>
+                     @endif
+                     <div wire:loading wire:target="main_image" class="text-sm text-blue-500 mt-1">Uploading...</div>
+                 </div>
+             </div>
 
-                <div class="mt-4">
-                    <label class="block text-sm font-medium mb-1">Main Product Image</label>
-                    <input type="file" wire:model="main_image" accept="image/*"
-                        class="w-full border rounded px-3 py-2">
-                    @if ($main_image)
-                        <div class="mt-2">
-                            <img src="{{ $main_image->temporaryUrl() }}" class="w-32 h-32 object-cover rounded">
-                        </div>
-                    @elseif ($isEdit && $product?->hasMedia('main_image'))
-                        <div class="mt-2">
-                            <img src="{{ $product->getFirstMediaUrl('main_image') }}"
-                                class="w-32 h-32 object-cover rounded">
-                        </div>
-                    @endif
-                    <div wire:loading wire:target="main_image" class="text-sm text-blue-500 mt-1">Uploading...</div>
-                </div>
-            </div>
+             <!-- Colors and Sizes -->
+             <div class="mb-8">
+                 <div class="flex justify-between items-center mb-4 border-b pb-2">
+                     <h3 class="text-lg font-semibold">Colors & Sizes</h3>
+                     <button type="button" wire:click="addColor"
+                         class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                         Add Color
+                     </button>
+                 </div>
 
-            <!-- Colors and Sizes -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <h3 class="text-lg font-semibold">Colors & Sizes</h3>
-                    <button type="button" wire:click="addColor"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Add Color
-                    </button>
-                </div>
+                 @if (empty($colors))
+                     <div class="text-center py-8 text-gray-500">
+                         No colors added yet. Click "Add Color" to get started.
+                     </div>
+                 @else
+                     @foreach ($colors as $colorIndex => $color)
+                         <div class="border rounded-lg p-4 mb-4 bg-gray-50" wire:key="color-{{ $colorIndex }}">
+                             <div class="flex justify-between items-start mb-4">
+                                 <h4 class="font-semibold text-md">Color #{{ $colorIndex + 1 }}</h4>
+                                 @if (count($colors) > 1)
+                                     <button type="button" wire:click="removeColor({{ $colorIndex }})"
+                                         class="text-red-500 hover:text-red-700 text-sm">
+                                         Remove Color
+                                     </button>
+                                 @endif
+                             </div>
 
-                @if(empty($colors))
-                    <div class="text-center py-8 text-gray-500">
-                        No colors added yet. Click "Add Color" to get started.
-                    </div>
-                @else
-                    @foreach ($colors as $colorIndex => $color)
-                        <div class="border rounded-lg p-4 mb-4 bg-gray-50" wire:key="color-{{ $colorIndex }}">
-                            <div class="flex justify-between items-start mb-4">
-                                <h4 class="font-semibold text-md">Color #{{ $colorIndex + 1 }}</h4>
-                                @if(count($colors) > 1)
-                                    <button type="button" wire:click="removeColor({{ $colorIndex }})"
-                                        class="text-red-500 hover:text-red-700 text-sm">
-                                        Remove Color
-                                    </button>
-                                @endif
-                            </div>
+                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                 <div>
+                                     <label class="block text-sm font-medium mb-1">Color Name *</label>
+                                     <input type="text" wire:model="colors.{{ $colorIndex }}.name"
+                                         class="w-full border rounded px-3 py-2 text-sm">
+                                     @error("colors.{$colorIndex}.name")
+                                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                     @enderror
+                                 </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Color Name *</label>
-                                    <input type="text" wire:model="colors.{{ $colorIndex }}.name"
-                                        class="w-full border rounded px-3 py-2 text-sm">
-                                    @error("colors.{$colorIndex}.name")
-                                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                                 <div>
+                                     <label class="block text-sm font-medium mb-1">Hex Code *</label>
+                                     <div class="flex gap-2">
+                                         <input type="color" wire:model.live="colors.{{ $colorIndex }}.hex_code"
+                                             class="w-16 h-10 border rounded cursor-pointer">
+                                         <input type="text" wire:model="colors.{{ $colorIndex }}.hex_code"
+                                             class="flex-1 border rounded px-3 py-2 text-sm">
+                                     </div>
+                                     @error("colors.{$colorIndex}.hex_code")
+                                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                     @enderror
+                                 </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Hex Code *</label>
-                                    <div class="flex gap-2">
-                                        <input type="color" wire:model.live="colors.{{ $colorIndex }}.hex_code"
-                                            class="w-16 h-10 border rounded cursor-pointer">
-                                        <input type="text" wire:model="colors.{{ $colorIndex }}.hex_code"
-                                            class="flex-1 border rounded px-3 py-2 text-sm">
-                                    </div>
-                                    @error("colors.{$colorIndex}.hex_code")
-                                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                                 <div>
+                                     <label class="block text-sm font-medium mb-1">Color Images</label>
+                                     <input type="file" wire:model="colorImages.{{ $colorIndex }}.images"
+                                         accept="image/*" multiple class="w-full border rounded px-3 py-2 text-sm">
 
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Color Images</label>
-                                    <input type="file" wire:model="colorImages.{{ $colorIndex }}.images"
-                                        accept="image/*" multiple
-                                        class="w-full border rounded px-3 py-2 text-sm">
-                                    
-                                    <!-- Image validation errors -->
-                                    @error("colorImages.{$colorIndex}.images")
-                                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                                    @enderror
-                                    
-                                    @foreach ($errors->get("colorImages.{$colorIndex}.images.*") as $messages)
-                                        @foreach ($messages as $message)
-                                            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                                        @endforeach
-                                    @endforeach
-                                    
-                                    <div wire:loading wire:target="colorImages.{{ $colorIndex }}.images"
-                                        class="text-sm text-blue-500 mt-1">Uploading...</div>
-                                </div>
-                            </div>
+                                     <!-- Image validation errors -->
+                                     @error("colorImages.{$colorIndex}.images")
+                                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                     @enderror
 
-                            <!-- Image Preview -->
-                            @if(isset($colorImages[$colorIndex]['images']) && count($colorImages[$colorIndex]['images']) > 0)
-                                <div class="mb-4">
-                                    <p class="text-sm font-medium mb-2">Uploaded Images:</p>
-                                    <div class="flex flex-wrap gap-2">
-                                        @foreach ($colorImages[$colorIndex]['images'] as $imageIndex => $image)
-                                            <div class="relative">
-                                                <img src="{{ $image->temporaryUrl() }}" 
+                                     @foreach ($errors->get("colorImages.{$colorIndex}.images.*") as $messages)
+                                         @foreach ($messages as $message)
+                                             <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                         @endforeach
+                                     @endforeach
+
+                                     <div wire:loading wire:target="colorImages.{{ $colorIndex }}.images"
+                                         class="text-sm text-blue-500 mt-1">Uploading...</div>
+                                 </div>
+                             </div>
+
+                             <!-- Image Preview -->
+                             @if (isset($colorImages[$colorIndex]['images']) && count($colorImages[$colorIndex]['images']) > 0)
+                                 <div class="mb-4">
+                                     <p class="text-sm font-medium mb-2">Uploaded Images:</p>
+                                     <div class="flex flex-wrap gap-2">
+                                         @foreach ($colorImages[$colorIndex]['images'] as $imageIndex => $image)
+                                             <div class="relative">
+                                                 <img src="{{ $image->temporaryUrl() }}"
                                                      class="w-20 h-20 object-cover rounded border">
-                                                @error("colorImages.{$colorIndex}.images.{$imageIndex}")
-                                                    <div class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                                        !
-                                                    </div>
-                                                @enderror
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @elseif(isset($existingColorImages[$colorIndex]) && $existingColorImages[$colorIndex]->count() > 0)
-                                <div class="mb-4">
-                                    <p class="text-sm font-medium mb-2">Existing Images:</p>
-                                    <div class="flex flex-wrap gap-2">
-                                        @foreach ($existingColorImages[$colorIndex] as $image)
-                                            <img src="{{ $image->getUrl() }}" 
+                                                 @error("colorImages.{$colorIndex}.images.{$imageIndex}")
+                                                     <div
+                                                         class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                                         !
+                                                     </div>
+                                                 @enderror
+                                             </div>
+                                         @endforeach
+                                     </div>
+                                 </div>
+                             @elseif(isset($existingColorImages[$colorIndex]) && $existingColorImages[$colorIndex]->count() > 0)
+                                 <div class="mb-4">
+                                     <p class="text-sm font-medium mb-2">Existing Images:</p>
+                                     <div class="flex flex-wrap gap-2">
+                                         @foreach ($existingColorImages[$colorIndex] as $image)
+                                             <img src="{{ $image->getUrl() }}"
                                                  class="w-20 h-20 object-cover rounded border">
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
+                                         @endforeach
+                                     </div>
+                                 </div>
+                             @endif
 
-                            <!-- Sizes -->
-                            <div>
-                                <label class="block text-sm font-medium mb-2">Available Sizes</label>
-                                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                                    @foreach ($availableSizes as $size)
-                                        <div
-                                            class="border rounded p-3 {{ $colors[$colorIndex]['sizes'][$size]['enabled'] ? 'bg-white' : 'bg-gray-100' }}">
-                                            <div class="flex items-center mb-2">
-                                                <input type="checkbox"
-                                                    wire:model.live="colors.{{ $colorIndex }}.sizes.{{ $size }}.enabled"
-                                                    id="size_{{ $colorIndex }}_{{ $size }}" class="mr-2">
-                                                <label for="size_{{ $colorIndex }}_{{ $size }}"
-                                                    class="font-medium text-sm">{{ $size }}</label>
-                                            </div>
+                             <!-- Sizes -->
+                             <div>
+                                 <label class="block text-sm font-medium mb-2">Available Sizes</label>
+                                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                                     @foreach ($availableSizes as $size)
+                                         <div
+                                             class="border rounded p-3 {{ $colors[$colorIndex]['sizes'][$size]['enabled'] ? 'bg-white' : 'bg-gray-100' }}">
+                                             <div class="flex items-center mb-2">
+                                                 <input type="checkbox"
+                                                     wire:model.live="colors.{{ $colorIndex }}.sizes.{{ $size }}.enabled"
+                                                     id="size_{{ $colorIndex }}_{{ $size }}"
+                                                     class="mr-2">
+                                                 <label for="size_{{ $colorIndex }}_{{ $size }}"
+                                                     class="font-medium text-sm">{{ $size }}</label>
+                                             </div>
 
-                                            @if ($colors[$colorIndex]['sizes'][$size]['enabled'])
-                                                <div class="space-y-2">
-                                                    <div>
-                                                        <input type="number"
-                                                            wire:model="colors.{{ $colorIndex }}.sizes.{{ $size }}.quantity"
-                                                            placeholder="Quantity"
-                                                            class="w-full border rounded px-2 py-1 text-sm">
-                                                        @error("colors.{$colorIndex}.sizes.{$size}.quantity")
-                                                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                                        @enderror
-                                                    </div>
-                                                    <div>
-                                                        <input type="number" step="0.01"
-                                                            wire:model="colors.{{ $colorIndex }}.sizes.{{ $size }}.price_adjustment"
-                                                            placeholder="Price ±"
-                                                            class="w-full border rounded px-2 py-1 text-sm">
-                                                        @error("colors.{$colorIndex}.sizes.{$size}.price_adjustment")
-                                                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
+                                             @if ($colors[$colorIndex]['sizes'][$size]['enabled'])
+                                                 <div class="space-y-2">
+                                                     <div>
+                                                         <input type="number"
+                                                             wire:model="colors.{{ $colorIndex }}.sizes.{{ $size }}.quantity"
+                                                             placeholder="Quantity"
+                                                             class="w-full border rounded px-2 py-1 text-sm">
+                                                         @error("colors.{$colorIndex}.sizes.{$size}.quantity")
+                                                             <span
+                                                                 class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                                         @enderror
+                                                     </div>
+                                                     <div>
+                                                         <input type="number" step="0.01"
+                                                             wire:model="colors.{{ $colorIndex }}.sizes.{{ $size }}.price_adjustment"
+                                                             placeholder="Price ±"
+                                                             class="w-full border rounded px-2 py-1 text-sm">
+                                                         @error("colors.{$colorIndex}.sizes.{$size}.price_adjustment")
+                                                             <span
+                                                                 class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                                         @enderror
+                                                     </div>
+                                                 </div>
+                                             @endif
+                                         </div>
+                                     @endforeach
+                                 </div>
+                             </div>
+                         </div>
+                     @endforeach
+                 @endif
+             </div>
 
-            <!-- Submit Buttons - Always visible at bottom -->
-            <div class="sticky bottom-0 bg-white border-t pt-4 mt-8">
-                <div class="flex gap-3 justify-end">
-                    <a href="{{ route('admin.products.index') }}" 
-                       class="px-6 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 transition">
-                        Cancel
-                    </a>
-                    <button type="submit" 
-                            class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
-                        {{ $isEdit ? 'Update Product' : 'Create Product' }}
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+             <!-- Submit Buttons - Always visible at bottom -->
+             <div class="sticky bottom-0 bg-white border-t pt-4 mt-8">
+                 <div class="flex gap-3 justify-end">
+                     <a href="{{ route('admin.products.index') }}"
+                         class="px-6 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 transition">
+                         Cancel
+                     </a>
+                     <button type="submit"
+                         class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+                         {{ $isEdit ? 'Update Product' : 'Create Product' }}
+                     </button>
+                 </div>
+             </div>
+         </form>
+     </div>
+ </div> --}}
+
+
+
+ <div class="max-w-7xl mx-auto py-6 px-4 mt-20">
+     <div class="bg-white shadow-md rounded-lg p-6">
+         <h2 class="text-2xl font-bold mb-6">
+             {{ $isEdit ? 'Edit Product' : 'Create Product' }}
+         </h2>
+
+         <form wire:submit="save">
+
+          
+             <!-- Basic Information -->
+             <div class="mb-8">
+                 <h3 class="text-lg font-semibold mb-4 border-b pb-2">Basic Information</h3>
+
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <!-- Product Type -->
+                     <div class="md:col-span-2">
+                         <label class="block text-sm font-medium mb-1">Product Type *</label>
+                         <select wire:model.live="productType" class="w-full border rounded px-3 py-2"
+                             @if ($isEdit) disabled @endif>
+                             @foreach ($productTypes as $typeValue => $typeLabel)
+                                 <option value="{{ $typeValue }}">{{ $typeLabel }}</option>
+                             @endforeach
+                         </select>
+                         @if ($isEdit)
+                             <p class="text-xs text-gray-500 mt-1">Product type cannot be changed after creation</p>
+                         @endif
+                         @error('productType')
+                             <span class="text-red-500 text-sm">{{ $message }}</span>
+                         @enderror
+                     </div>
+
+                     <div>
+                         <label class="block text-sm font-medium mb-1">Product Name *</label>
+                         <input type="text" wire:model="name"
+                             class="w-full border rounded px-3 py-2 @error('name') border-red-500 @enderror">
+                         @error('name')
+                             <span class="text-red-500 text-sm">{{ $message }}</span>
+                         @enderror
+                     </div>
+
+                     <div>
+                         <label class="block text-sm font-medium mb-1">Base Price *</label>
+                         <input type="number" step="0.01" wire:model="base_price"
+                             class="w-full border rounded px-3 py-2 @error('base_price') border-red-500 @enderror">
+                         @error('base_price')
+                             <span class="text-red-500 text-sm">{{ $message }}</span>
+                         @enderror
+                     </div>
+
+                     <!-- Simple Quantity (Only for Accessories) -->
+                     @if ($productType === 'simple')
+                         <div>
+                             <label class="block text-sm font-medium mb-1">Quantity *</label>
+                             <input type="number" wire:model="simpleQuantity"
+                                 class="w-full border rounded px-3 py-2 @error('simpleQuantity') border-red-500 @enderror">
+                             @error('simpleQuantity')
+                                 <span class="text-red-500 text-sm">{{ $message }}</span>
+                             @enderror
+                         </div>
+                     @endif
+
+                     <div class=" flex flex-wrap gap-7">
+                         <div>
+                             <label for="is_active" class="block text-sm font-medium text-gray-700 mb-2">
+                                 Active:
+                             </label>
+                             <input type="checkbox" wire:model="is_active" class="toggle toggle-secondary" />
+                             @error('is_active')
+                                 <span class="text-red-500 text-sm">{{ $message }}</span>
+                             @enderror
+                         </div>
+
+                         <div>
+                             <label for="is_featured" class="block text-sm font-medium text-gray-700 mb-2">
+                                 Featured:
+                             </label>
+                             <input type="checkbox" wire:model="is_featured" class="toggle toggle-secondary" />
+                             @error('is_featured')
+                                 <span class="text-red-500 text-sm">{{ $message }}</span>
+                             @enderror
+                         </div>
+                     </div>
+
+
+
+                     <div>
+                         <label class="block text-sm font-medium mb-1">Category *</label>
+                         <select wire:model="category_id"
+                             class="w-full border rounded px-3 py-2 @error('category_id') border-red-500 @enderror">
+
+                             @foreach ($nestedCategories as $category)
+                                 <option value="{{ $category['id'] }}"
+                                     @if ($category['level'] > 0) style="padding-left: {{ $category['level'] * 20 }}px" @endif>
+                                     {{ $category['name'] }} {{-- Use {!! !!} to render HTML --}}
+                                 </option>
+                             @endforeach
+                         </select>
+                         @error('category_id')
+                             <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                         @enderror
+                     </div>
+                 </div>
+
+                 <div class="mt-4">
+                     <label class="block text-sm font-medium mb-1">Description</label>
+                     <textarea wire:model="description" rows="3" class="w-full border rounded px-3 py-2"></textarea>
+                     @error('description')
+                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                     @enderror
+                 </div>
+
+                 <div class="mt-4">
+                     <label class="block text-sm font-medium mb-1">Main Product Image</label>
+                     <input type="file" wire:model="main_image" accept="image/*"
+                         class="w-full border rounded px-3 py-2">
+                     @if ($main_image)
+                         <div class="mt-2">
+                             <img src="{{ $main_image->temporaryUrl() }}" class="w-32 h-32 object-cover rounded">
+                         </div>
+                     @elseif($isEdit && $product?->hasMedia('main_image'))
+                         <div class="mt-2">
+                             <img src="{{ $product->getFirstMediaUrl('main_image') }}"
+                                 class="w-32 h-32 object-cover rounded">
+                         </div>
+                     @endif
+                     <div wire:loading wire:target="main_image" class="text-sm text-blue-500 mt-1">Uploading...</div>
+                     @error('main_image')
+                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                     @enderror
+                 </div>
+             </div>
+
+             <!-- Colors Section (Only for Bags and Clothing) -->
+             @if ($productType !== 'simple')
+                 <div class="mb-8">
+                     <div class="flex justify-between items-center mb-4 border-b pb-2">
+                         <h3 class="text-lg font-semibold">
+                             @if ($productType === 'variable_color')
+                                 Colors (Bags)
+                             @else
+                                 Colors & Sizes (Clothing)
+                             @endif
+                         </h3>
+                         <button type="button" wire:click="addColor"
+                             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                             Add Color
+                         </button>
+                     </div>
+
+                     @if (empty($colors))
+                         <div class="text-center py-8 text-gray-500">
+                             No colors added yet. Click "Add Color" to get started.
+                         </div>
+                     @else
+                         @foreach ($colors as $colorIndex => $color)
+                             <div class="border rounded-lg p-4 mb-4 bg-gray-50" wire:key="color-{{ $colorIndex }}">
+                                 <div class="flex justify-between items-start mb-4">
+                                     <h4 class="font-semibold text-md">Color #{{ $colorIndex + 1 }}</h4>
+                                     @if (count($colors) > 1)
+                                         <button type="button" wire:click="removeColor({{ $colorIndex }})"
+                                             class="text-red-500 hover:text-red-700 text-sm">
+                                             Remove Color
+                                         </button>
+                                     @endif
+                                 </div>
+
+                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                     <div>
+                                         <label class="block text-sm font-medium mb-1">Color Name *</label>
+                                         <input type="text" wire:model="colors.{{ $colorIndex }}.name"
+                                             class="w-full border rounded px-3 py-2 text-sm">
+                                         @error("colors.{$colorIndex}.name")
+                                             <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                         @enderror
+                                     </div>
+
+                                     <div>
+                                         <label class="block text-sm font-medium mb-1">Hex Code *</label>
+                                         <div class="flex gap-2">
+                                             <input type="color"
+                                                 wire:model.live="colors.{{ $colorIndex }}.hex_code"
+                                                 class="w-16 h-10 border rounded cursor-pointer">
+                                             <input type="text" wire:model="colors.{{ $colorIndex }}.hex_code"
+                                                 class="flex-1 border rounded px-3 py-2 text-sm">
+                                         </div>
+                                         @error("colors.{$colorIndex}.hex_code")
+                                             <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                         @enderror
+                                     </div>
+
+                                     <!-- Quantity for Bags Only -->
+                                     @if ($productType === 'variable_color')
+                                         <div>
+                                             <label class="block text-sm font-medium mb-1">Quantity *</label>
+                                             <input type="number" wire:model="colors.{{ $colorIndex }}.quantity"
+                                                 class="w-full border rounded px-3 py-2 text-sm">
+                                             @error("colors.{$colorIndex}.quantity")
+                                                 <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                             @enderror
+                                         </div>
+                                     @endif
+
+                                     <div>
+                                         <label class="block text-sm font-medium mb-1">Color Images</label>
+                                         <input type="file" wire:model="colorImages.{{ $colorIndex }}.images"
+                                             accept="image/*" multiple
+                                             class="w-full border rounded px-3 py-2 text-sm">
+                                         @error('colorImages')
+                                             <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                         @enderror
+                                         <div wire:loading wire:target="colorImages.{{ $colorIndex }}.images"
+                                             class="text-sm text-blue-500 mt-1">Uploading...</div>
+                                     </div>
+                                 </div>
+
+                                 <!-- Image Preview -->
+                                 @if (isset($colorImages[$colorIndex]['images']) && count($colorImages[$colorIndex]['images']) > 0)
+                                     <div class="mb-4">
+                                         <p class="text-sm font-medium mb-2">Uploaded Images:</p>
+                                         <div class="flex flex-wrap gap-2">
+                                             @foreach ($colorImages[$colorIndex]['images'] as $image)
+                                                 <img src="{{ $image->temporaryUrl() }}"
+                                                     class="w-20 h-20 object-cover rounded border">
+                                             @endforeach
+                                         </div>
+                                     </div>
+                                 @elseif(isset($existingColorImages[$colorIndex]) && $existingColorImages[$colorIndex]->count() > 0)
+                                     <div class="mb-4">
+                                         <p class="text-sm font-medium mb-2">Existing Images:</p>
+                                         <div class="flex flex-wrap gap-2">
+                                             @foreach ($existingColorImages[$colorIndex] as $image)
+                                                 <img src="{{ $image->getUrl() }}"
+                                                     class="w-20 h-20 object-cover rounded border">
+                                             @endforeach
+                                         </div>
+                                     </div>
+                                 @endif
+
+                                 <!-- Sizes (Only for Clothing) -->
+                                 @if ($productType === 'variable_color_size')
+                                     <div>
+                                         <label class="block text-sm font-medium mb-2">Available Sizes</label>
+                                         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                                             @foreach ($availableSizes as $size)
+                                                 <div
+                                                     class="border rounded p-3 {{ $colors[$colorIndex]['sizes'][$size]['enabled'] ? 'bg-white' : 'bg-gray-100' }}">
+                                                     <div class="flex items-center mb-2">
+                                                         <input type="checkbox"
+                                                             wire:model.live="colors.{{ $colorIndex }}.sizes.{{ $size }}.enabled"
+                                                             id="size_{{ $colorIndex }}_{{ $size }}"
+                                                             class="mr-2">
+                                                         <label for="size_{{ $colorIndex }}_{{ $size }}"
+                                                             class="font-medium text-sm">{{ $size }}</label>
+                                                     </div>
+
+                                                     @if ($colors[$colorIndex]['sizes'][$size]['enabled'])
+                                                         <div class="space-y-2">
+                                                             <input type="number"
+                                                                 wire:model="colors.{{ $colorIndex }}.sizes.{{ $size }}.quantity"
+                                                                 placeholder="Quantity"
+                                                                 class="w-full border rounded px-2 py-1 text-sm">
+                                                             <input type="number" step="0.01"
+                                                                 wire:model="colors.{{ $colorIndex }}.sizes.{{ $size }}.price_adjustment"
+                                                                 placeholder="Price ±"
+                                                                 class="w-full border rounded px-2 py-1 text-sm">
+                                                             @error('colors.{{ $colorIndex }}.sizes.{{ $size }}.quantity')
+                                                                 <span
+                                                                     class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                                             @enderror
+                                                         </div>
+                                                     @endif
+                                                 </div>
+                                             @endforeach
+                                         </div>
+                                     </div>
+                                 @endif
+                             </div>
+                         @endforeach
+                     @endif
+                 </div>
+             @endif
+
+             <!-- Submit Buttons -->
+             <div class="sticky bottom-0 bg-white border-t pt-4 mt-8">
+                 <div class="flex gap-3 justify-end">
+                     <a href="{{ route('admin.products.index') }}"
+                         class="px-6 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 transition">
+                         Cancel
+                     </a>
+                     <button type="submit"
+                         class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+
+                         <span class="loading loading-spinner text-neutral-content" wire:loading
+                             wire:target="save"></span>
+                         {{ $isEdit ? 'Update Product' : 'Create Product' }}
+                     </button>
+                 </div>
+             </div>
+         </form>
+     </div>
+ </div>

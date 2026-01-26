@@ -15,8 +15,8 @@ class ShippingRuleSeeder extends Seeder
     {
         $rules = [
             [
-                'name' => 'Free Shipping Over $50',
-                'min_order_amount' => 50.00,
+                'name' => 'Free Shipping Over EGP 1000',
+                'min_order_amount' => 1000.00,
                 'shipping_cost' => 0.00,
                 'is_free' => true,
                 'is_active' => true,
@@ -25,7 +25,7 @@ class ShippingRuleSeeder extends Seeder
             [
                 'name' => 'Standard Shipping',
                 'min_order_amount' => null,
-                'shipping_cost' => 5.99,
+                'shipping_cost' => 90,
                 'is_free' => false,
                 'is_active' => true,
                 'priority' => 1,

@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('description',500);
             $table->decimal('base_price', 10, 2);
             $table->string('sku')->unique()->nullable();
+            $table->enum('type', ['simple', 'variable_color', 'variable_color_size'])
+            ->default('simple');
+            // For simple products, store quantity directly on product
+            $table->integer('simple_quantity')->nullable();
             $table->string('image')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('has_discount')->default(false);
@@ -27,6 +31,7 @@ return new class extends Migration
             $table->timestamp('discount_starts_at')->nullable();
             $table->timestamp('discount_ends_at')->nullable();
             $table->boolean('free_shipping')->default(false);
+            $table->boolean('is_featured')->default(false);
             $table->timestamps();
 
             $table->index(['is_active', 'category_id', 'created_at']);

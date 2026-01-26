@@ -45,20 +45,32 @@ class CartItem extends Model
         return $this->belongsTo(ProductSize::class);
     }
 
-    /**
-     * Get base price (with size adjustment)
+   /**
+     * Get base price (with size adjustment if applicable)
      */
     public function getBasePriceAttribute(): float
     {
-        return $this->product->base_price + ($this->productSize->price_adjustment ?? 0);
+        $basePrice = $this->product->base_price;
+        
+        // Only add size adjustment for clothing (variable_color_size)
+        if ($this->product->hasColorsAndSizes() && $this->productSize) {
+            $basePrice += $this->productSize->price_adjustment ?? 0;
+        }
+        
+        return $basePrice;
     }
-
-      /**
+     /**
      * Get final price after discount
      */
     public function getFinalPriceAttribute(): float
     {
-        return $this->product->getFinalPrice($this->productSize->price_adjustment ?? 0);
+        $sizeAdjustment = 0;
+        
+        if ($this->product->hasColorsAndSizes() && $this->productSize) {
+            $sizeAdjustment = $this->productSize->price_adjustment ?? 0;
+        }
+        
+        return $this->product->getFinalPrice($sizeAdjustment);
     }
 
     /**
@@ -76,5 +88,24 @@ class CartItem extends Model
     public function getLineTotalAttribute(): float
     {
         return $this->final_price * $this->quantity;
+    }
+
+    
+    /**
+     * Get display text for variant (color and/or size)
+     */
+    public function getVariantTextAttribute(): string
+    {
+        $parts = [];
+        
+        if ($this->productColor) {
+            $parts[] = "Color: {$this->productColor->name}";
+        }
+        
+        if ($this->productSize) {
+            $parts[] = "Size: {$this->productSize->size}";
+        }
+        
+        return implode(' | ', $parts);
     }
 }

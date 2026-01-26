@@ -1,157 +1,5 @@
-{{-- <div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">Shipping Information</h2>
-
-                    <form wire:submit="placeOrder">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                                <input type="text" wire:model="shipping_name"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    required>
-                                @error('shipping_name')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                <input type="email" wire:model="shipping_email"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    required>
-                                @error('shipping_email')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                            <input type="tel" wire:model="shipping_phone"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            @error('shipping_phone')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
-                            <input type="text" wire:model="shipping_address"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                required>
-                            @error('shipping_address')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                                <input type="text" wire:model="shipping_city"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    required>
-                                @error('shipping_city')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
-                                <input type="text" wire:model="shipping_state"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                                @error('shipping_state')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code *</label>
-                                <input type="text" wire:model="shipping_postal_code"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    required>
-                                @error('shipping_postal_code')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
-                            <input type="text" wire:model="shipping_country"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                required>
-                            @error('shipping_country')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Order Notes</label>
-                            <textarea wire:model="notes" rows="3"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
-                            @error('notes')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <button type="submit"
-                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                            Place Order
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-lg p-6 sticky top-4">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
-
-                    <div class="space-y-4 mb-6">
-                        @foreach ($cartItems as $item)
-                           
-                            <div class="flex justify-between items-start">
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-gray-900">{{ $item->product->name }}</p>
-                                    <p class="text-sm text-gray-500">Qty: {{ $item->quantity }}</p>
-                                </div>
-                                <p class="text-sm font-medium text-gray-900">
-                                    ${{ number_format($item->quantity * $item->product->price, 2) }}</p>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="border-t border-gray-200 pt-4 space-y-2">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Subtotal:</span>
-                            <span class="text-gray-900">${{ number_format($this->subtotal, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Tax (10%):</span>
-                            <span class="text-gray-900">${{ number_format($this->tax, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Shipping:</span>
-                            <span class="text-gray-900">${{ number_format($this->shipping, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
-                            <span class="text-gray-900">Total:</span>
-                            <span class="text-indigo-600">${{ number_format($this->total, 2) }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> --}}
-
-
 <div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-20">
         <!-- Breadcrumb -->
         <div class="text-sm breadcrumbs mb-6">
             <ul>
@@ -182,12 +30,38 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                 <div class="form-control">
                                     <label class="label">
-                                        <span class="label-text font-semibold">Full Name <span
+                                        <span class="label-text font-semibold">First Name <span
                                                 class="text-error">*</span></span>
                                     </label>
-                                    <input type="text" wire:model="shipping_name" placeholder="John Doe"
+                                    <input type="text" wire:model="first_name" placeholder="John Doe"
                                         class="input input-bordered w-full focus:input-primary" required>
-                                    @error('shipping_name')
+                                    @error('first_name')
+                                        <label class="label">
+                                            <span class="label-text-alt text-error">{{ $message }}</span>
+                                        </label>
+                                    @enderror
+                                </div>
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text font-semibold">Last Name <span
+                                                class="text-error">*</span></span>
+                                    </label>
+                                    <input type="text" wire:model="last_name" placeholder="John Doe"
+                                        class="input input-bordered w-full focus:input-primary" required>
+                                    @error('last_name')
+                                        <label class="label">
+                                            <span class="label-text-alt text-error">{{ $message }}</span>
+                                        </label>
+                                    @enderror
+                                </div>
+
+                                <div class="form-control mb-6">
+                                    <label class="label">
+                                        <span class="label-text font-semibold">Phone Number</span>
+                                    </label>
+                                    <input type="tel" wire:model="customer_phone" placeholder="+1 (555) 123-4567"
+                                        class="input input-bordered w-full focus:input-primary">
+                                    @error('customer_phone')
                                         <label class="label">
                                             <span class="label-text-alt text-error">{{ $message }}</span>
                                         </label>
@@ -199,7 +73,7 @@
                                         <span class="label-text font-semibold">Email <span
                                                 class="text-error">*</span></span>
                                     </label>
-                                    <input type="email" wire:model="shipping_email" placeholder="john@example.com"
+                                    <input type="email" wire:model="customer_email" placeholder="john@example.com"
                                         class="input input-bordered w-full focus:input-primary" required>
                                     @error('shipping_email')
                                         <label class="label">
@@ -209,18 +83,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-control mb-6">
-                                <label class="label">
-                                    <span class="label-text font-semibold">Phone Number</span>
-                                </label>
-                                <input type="tel" wire:model="shipping_phone" placeholder="+1 (555) 123-4567"
-                                    class="input input-bordered w-full focus:input-primary">
-                                @error('shipping_phone')
-                                    <label class="label">
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    </label>
-                                @enderror
-                            </div>
+
 
                             <!-- Address -->
                             <div class="form-control mb-6">
@@ -239,26 +102,61 @@
 
                             <!-- City, State, Postal Code -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <!-- Country -->
+                                <div class="form-control mb-6">
+                                    <label class="label">
+                                        <span class="label-text font-semibold">Country <span
+                                                class="text-error">*</span></span>
+                                    </label>
+                                    <select wire:model="shipping_country"
+                                        class="select select-bordered w-full focus:select-primary">
+                                        <option disabled selected>Select your country</option>
+                                        <option value="EGP">EGYPT</option>
+                                        {{-- <option value="CA">Canada</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="AU">Australia</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="FR">France</option> --}}
+                                    </select>
+                                    @error('shipping_country')
+                                        <label class="label">
+                                            <span class="label-text-alt text-error">{{ $message }}</span>
+                                        </label>
+                                    @enderror
+                                </div>
                                 <div class="form-control">
                                     <label class="label">
                                         <span class="label-text font-semibold">City <span
                                                 class="text-error">*</span></span>
                                     </label>
-                                    <input type="text" wire:model="shipping_city" placeholder="New York"
-                                        class="input input-bordered w-full focus:input-primary" required>
+                                    <select wire:model.live="shipping_city" placeholder="New York"
+                                        class="select select-bordered w-full focus:select-primary" required>
+                                        @foreach ($cities as $city)
+                                            <option :value={{ $city['id'] }}>{{ $city['name_ar'] }}</option>
+                                        @endforeach
+
+                                    </select>
                                     @error('shipping_city')
                                         <label class="label">
                                             <span class="label-text-alt text-error">{{ $message }}</span>
                                         </label>
                                     @enderror
+
                                 </div>
 
                                 <div class="form-control">
                                     <label class="label">
                                         <span class="label-text font-semibold">State/Province</span>
                                     </label>
-                                    <input type="text" wire:model="shipping_state" placeholder="NY"
-                                        class="input input-bordered w-full focus:input-primary">
+                                    <select wire:model="shipping_state" placeholder="NY"
+                                        class="select select-bordered w-full focus:select-primary">
+
+                                        @foreach ($states as $state)
+                                            <option :value={{ $state['name_ar'] }}>{{ $state['name_ar'] }}</option>
+                                        @endforeach
+
+
+                                    </select>
                                     @error('shipping_state')
                                         <label class="label">
                                             <span class="label-text-alt text-error">{{ $message }}</span>
@@ -281,28 +179,7 @@
                                 </div> --}}
                             </div>
 
-                            <!-- Country -->
-                            <div class="form-control mb-6">
-                                <label class="label">
-                                    <span class="label-text font-semibold">Country <span
-                                            class="text-error">*</span></span>
-                                </label>
-                                <select wire:model="shipping_country"
-                                    class="select select-bordered w-full focus:select-primary">
-                                    <option disabled selected>Select your country</option>
-                                    <option value="EGP">EGYPT</option>
-                                    {{-- <option value="CA">Canada</option>
-                                    <option value="UK">United Kingdom</option>
-                                    <option value="AU">Australia</option>
-                                    <option value="DE">Germany</option>
-                                    <option value="FR">France</option> --}}
-                                </select>
-                                @error('shipping_country')
-                                    <label class="label">
-                                        <span class="label-text-alt text-error">{{ $message }}</span>
-                                    </label>
-                                @enderror
-                            </div>
+
 
                             <!-- Order Notes -->
                             <div class="form-control mb-8">
@@ -330,18 +207,18 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="form-control">
                                         <label class="label cursor-pointer justify-start gap-3">
-                                            <input type="radio" name="payment_method" value="credit_card"
-                                                class="radio radio-primary" checked />
-                                            <span class="label-text">Credit Card</span>
+                                            <input type="radio" wire:model="payment_method" value="COD"
+                                                class="radio radio-primary"  />
+                                            <span class="label-text">Cash on delivery</span>
                                         </label>
                                     </div>
-                                    <div class="form-control">
+                                    {{-- <div class="form-control">
                                         <label class="label cursor-pointer justify-start gap-3">
                                             <input type="radio" name="payment_method" value="paypal"
                                                 class="radio radio-primary" />
                                             <span class="label-text">PayPal</span>
                                         </label>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
 
@@ -396,8 +273,12 @@
                                 <div class="flex gap-3 p-3 bg-base-200 rounded-lg">
                                     <div class="avatar">
                                         <div class="w-12 h-12 rounded bg-base-300 flex items-center justify-center">
-                                            @if ($item->product->colors->find($item->product_color_id)->hasMedia('color_images'))
-                                                <img src="{{ $item->product->colors->find($item->product_color_id)->getColorImageUrl('thumb') }}"
+                                            @if ($item->product->isSimple())
+                                                <img src="{{ $item->product->getMainImageUrl('thumb') }}"
+                                                    alt="{{ $item->product->name }}"
+                                                    class="w-full h-full object-cover rounded">
+                                            @elseif ($item->product->hasColorsOnly() || $item->product->hasColorsAndSizes())
+                                                <img src="{{ $item->productColor->getColorImageUrl('thumb') }}"
                                                     alt="{{ $item->product->name }}"
                                                     class="w-full h-full object-cover rounded">
                                             @else
@@ -408,17 +289,26 @@
                                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
                                             @endif
+
                                         </div>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <h4 class="font-semibold text-sm truncate">{{ $item->product->name }}</h4>
                                         <div class="flex items-center justify-between mt-1">
-                                            <div class="text-xs text-base-content opacity-70">
-                                                <span
-                                                    class="badge badge-xs mr-1">{{ $item->productColor->name }}</span>
-                                                <span
-                                                    class="badge badge-xs">{{ $item->productSize->size }}</span>
-                                            </div>
+                                            @if ($item->product->hasColorsAndSizes())
+                                                <div class="text-xs text-base-content opacity-70">
+                                                    <span
+                                                        class="badge badge-xs mr-1">{{ $item->productColor->name }}</span>
+                                                    <span class="badge badge-xs">{{ $item->productSize->size }}</span>
+                                                </div>
+                                            @elseif($item->product->hasColorsOnly())
+                                                <div class="text-xs text-base-content opacity-70">
+                                                    <span
+                                                        class="badge badge-xs mr-1">{{ $item->productColor->name }}</span>
+
+                                                </div>
+                                            @endif
+
                                             <span class="text-xs font-medium">×{{ $item->quantity }}</span>
                                         </div>
                                         <p class="text-sm font-semibold mt-1">
@@ -447,7 +337,7 @@
                                     @if ($this->shipping > 0)
                                         EGP {{ number_format($this->shipping, 2) }}
                                     @else
-                                        <span class="text-success">Free</span>
+                                        <span class="text-base-content">Free</span>
                                     @endif
                                 </span>
                             </div>
@@ -468,11 +358,11 @@
 
                             <!-- Total -->
                             <div class="flex justify-between items-center pt-4 border-t border-base-300">
-                                <span class="text-lg font-bold text-base-content">Total</span>
+                                <span class=" font-bold text-base-content">Total</span>
                                 <div class="text-right">
-                                    <span
-                                        class="text-2xl font-bold text-primary">EGP {{ number_format($this->total, 2) }}</span>
-                                    <p class="text-xs text-base-content opacity-70">EGP</p>
+                                    <span class=" font-bold  text-base-content">EGP
+                                        {{ number_format($this->total, 2) }}</span>
+                                    {{-- <p class="text-xs text-base-content opacity-70">EGP</p> --}}
                                 </div>
                             </div>
                         </div>
@@ -502,7 +392,7 @@
                                 </svg>
                                 Need Help?
                             </a>
-                            <p class=" text-sm text-secondary">hello</p>
+
                         </div>
                     </div>
                 </div>

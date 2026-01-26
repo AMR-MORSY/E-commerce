@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('product_id')->index()->constrained()->cascadeOnDelete();
             $table->string('name'); // e.g., "Red", "Blue"
             $table->string('hex_code')->nullable(); // e.g., "#FF0000"
+            $table->integer('quantity')->nullable();
+              // For bags (variable_color), quantity stored on color level
             $table->timestamps();
         });
     }

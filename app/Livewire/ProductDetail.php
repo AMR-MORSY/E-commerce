@@ -19,42 +19,75 @@ class ProductDetail extends Component
     public ?ProductSize $selectedSize = null;
     public $currentImageIndex = 0;
     public $quantity = 1;
-    
+
 
     public  $productFound = false;
 
 
-    // public $drawerShow=false;
 
-    // public $cartService;
-
-    public function mount( $slug)
+    public function mount($product)
     {
-        // $this->cartService=$cartService;
-        $this->product = Product::where('slug', $slug)
-            ->where('is_active', true)
-            ->with(['colors.sizes', 'colors.media'])
-            ->firstOrFail();
 
-        // Select first available color by default
-        if ($this->product->colors->isNotEmpty()) {
-            $this->selectColor($this->product->colors->first()->id);
+        // $this->product = Product::where('slug', $slug)
+        //     ->where('is_active', true)
+        //     ->with(['colors.sizes', 'colors.media'])
+        //     ->firstOrFail();
+
+        $this->product = $product;
+     
+        // Auto-select for different product types
+        if ($this->product->hasColorsOnly() || $this->product->hasColorsAndSizes()) {
+            if ($this->product->colors->isNotEmpty()) {
+                $this->selectedColor=$this->product->colors->first();
+            }
+        }
+        if ($this->selectedColor && $this->product->hasColorsAndSizes()) {
+            $this->selectedSize = $this->selectedColor->sizes()->first();
         }
     }
+
+    // public Product $product;
+    // public ?ProductColor $selectedColor = null;
+    // public ?ProductSize $selectedSize = null;
+    // public $currentImageIndex = 0;
+    // public $quantity = 1;
+    // public $currentImages;
+    // public $discountedPrice;
+    // public $originalPrice;
+
+    // public function mount(
+    //     Product $product,
+    //     $selectedColor = null,
+    //     $selectedSize = null,
+    //     $currentImages = null,
+    //     $discountedPrice = 0,
+    //     $originalPrice = 0
+    // ) {
+    //     $this->product = $product;
+    //     $this->selectedColor = $selectedColor;
+    //     $this->selectedSize = $selectedSize;
+    //     $this->currentImages = $currentImages;
+    //     $this->discountedPrice = $discountedPrice;
+    //     $this->originalPrice = $originalPrice;
+    // }
 
     public function selectColor($colorId)
     {
         $this->selectedColor = $this->product->colors->find($colorId);
-        $this->selectedSize = null; // Reset size selection when color changes
+
         $this->currentImageIndex = 0; // Reset carousel to first image
 
-        // Auto-select first available size if exists
-        $firstAvailableSize = $this->selectedColor->sizes
-            ->where('quantity', '>', 0)
-            ->first();
+        // For clothing, auto-select first available size
+        if ($this->product->hasColorsAndSizes()) {
+            $this->selectedSize = null; // Reset size selection when color changes
 
-        if ($firstAvailableSize) {
-            $this->selectedSize = $firstAvailableSize;
+            $firstAvailableSize = $this->selectedColor->sizes
+                ->where('quantity', '>', 0)
+                ->first();
+
+            if ($firstAvailableSize) {
+                $this->selectedSize = $firstAvailableSize;
+            }
         }
     }
 
@@ -83,10 +116,11 @@ class ProductDetail extends Component
     {
         $this->currentImageIndex = $index;
     }
-
     public function incrementQuantity()
     {
-        if ($this->selectedSize && $this->quantity < $this->selectedSize->quantity) {
+        $maxQuantity = $this->getMaxQuantity();
+
+        if ($this->quantity < $maxQuantity) {
             $this->quantity++;
         }
     }
@@ -98,84 +132,64 @@ class ProductDetail extends Component
         }
     }
 
+    public function getMaxQuantity()
+    {
+        if ($this->product->isSimple()) {
+            return $this->product->simple_quantity ?? 0;
+        }
+
+        if ($this->product->hasColorsOnly() && $this->selectedColor) {
+            return $this->selectedColor->quantity ?? 0;
+        }
+
+        if ($this->product->hasColorsAndSizes() && $this->selectedSize) {
+            return $this->selectedSize->quantity ?? 0;
+        }
+
+        return 0;
+    }
+
     public function addToCart(CartService $cartService)
     {
 
-        if (!$this->selectedColor || !$this->selectedSize) {
-            session()->flash('error', 'Please select a color and size');
-            return;
+        // Validate based on product type
+        if ($this->product->isSimple()) {
+            // Simple product - just check quantity
+            if ($this->product->simple_quantity < $this->quantity) {
+                session()->flash('error', 'Not enough stock available');
+                return;
+            }
+            $cartService->addItem($this->product, null, null, $this->quantity);
+        } elseif ($this->product->hasColorsOnly()) {
+            // Bags - need color
+            if (!$this->selectedColor) {
+                session()->flash('error', 'Please select a color');
+                return;
+            }
+
+            if ($this->selectedColor->quantity < $this->quantity) {
+                session()->flash('error', 'Not enough stock available');
+                return;
+            }
+            $cartService->addItem($this->product, $this->selectedColor->id, null, $this->quantity);
+        } elseif ($this->product->hasColorsAndSizes()) {
+            // Clothing - need color and size
+            if (!$this->selectedColor || !$this->selectedSize) {
+                session()->flash('error', 'Please select a color and size');
+                return;
+            }
+
+            if ($this->selectedSize->quantity < $this->quantity) {
+                session()->flash('error', 'Not enough stock available');
+                return;
+            }
+            $cartService->addItem($this->product, $this->selectedColor->id, $this->selectedSize->id, $this->quantity);
         }
 
-        if ($this->selectedSize->quantity < $this->quantity) {
-            session()->flash('error', 'Not enough stock available');
-            return;
-        }
+        // $cartItem = $cartService->addItem($this->product, $this->selectedColor->id, $this->selectedSize->id, $this->quantity);
 
-        $cartItem=$cartService->addItem($this->product,$this->selectedColor->id,$this->selectedSize->id,$this->quantity);
-        // session()->flash('message', 'Product added to cart!');
-        // $this->drawerShow=true;
         $this->dispatch("cart-updated");
-        // return redirect()->route('product.detail', $this->product->slug);
-
-        // if (!auth()->check()) {
-        //     // Store cart items in session for guests
-
-
-        //     $cart = session()->get('cart', []);
-
-
-
-        //     $cart = array_map(function ($item) { //////////updating the product's quantity if user selected the same product'color and size
-        //         if ($item['product_id'] == $this->product->id && $item['product_color_id'] == $this->selectedColor->id && $item['product_size_id'] == $this->selectedSize->id) {
-        //             $this->productFound = true;
-        //             $item['quantity'] = $item['quantity'] + $this->quantity;
-        //         }
-        //         return $item;
-        //     }, $cart);
-
-        //     if (!$this->productFound) //////////creating another product
-        //     {
-        //         $cart[] =  [
-        //             'product_id' => $this->product->id,
-        //             'quantity' => $this->quantity,
-        //             'product_color_id' => $this->selectedColor->id,
-        //             'product_size_id' => $this->selectedSize->id,
-        //             "product" => $this->product,
-        //         ];
-        //     }
-
-
-
-        //     session()->flash('message', 'Product added to cart! You can review it after logging in.');
-
-
-
-        //     session()->put('cart', $cart);
-
-
-
-
-
-        //     return redirect()->route('product.detail', $this->product->slug);
-        // }
-        // /** @var \App\Models\User $user */
-        // $user = auth()->user();
-        // $cartItem = $user->cartItems()->where('product_id', $this->product->id)->where('product_color_id', $this->selectedColor->id)->where('product_size_id', $this->selectedSize->id)->first();
-
-        // if ($cartItem) {
-        //     $cartItemQuantity = $cartItem->quantity;
-        //     $cartItem->update(['quantity' => $cartItemQuantity + $this->quantity]);
-        //     session()->flash('message', 'Product quantity updated in cart!');
-        // } else {
-        //     $user->cartItems()->create([
-        //         'product_id' => $this->product->id,
-        //         'quantity' => $this->quantity,
-        //         'product_color_id' => $this->selectedColor->id,
-        //         'product_size_id' => $this->selectedSize->id,
-        //     ]);
-        //     session()->flash('message', 'Product added to cart!');
-        // }
-        // return redirect()->route('product.detail', $this->product->slug);
+        $this->quantity = 1;
     }
 
     public function getCurrentImages()
@@ -198,41 +212,69 @@ class ProductDetail extends Component
         return $images;
     }
 
-    /**
-     * a computed property returns the final price after applying the discount as well as the size price adjustment
-     */
     public function getDiscountedPrice()
     {
-        // $basePrice = $this->product->base_price;
+        $sizeAdjustment = 0;
 
-        // if ($this->selectedSize && $this->selectedSize->price_adjustment) {
-        //     return $basePrice + $this->selectedSize->price_adjustment;
-        // }
-
-        // return $basePrice;
-
-        if ($this->selectedSize) {
-            return $this->product->getFinalPrice($this->selectedSize->price_adjustment);
+        if ($this->product->hasColorsAndSizes() && $this->selectedSize) {
+            $sizeAdjustment = $this->selectedSize->price_adjustment ?? 0;
         }
+
+        return $this->product->getFinalPrice($sizeAdjustment);
     }
+
     /**
      * a computed property returns product base price + selected size price_adjustment. computed property value is updating when selected size value get updated
      */
 
     public function getOriginalPrice()
     {
-        
+        $basePrice = $this->product->base_price;
 
-        if ($this->selectedSize) {
-            return $this->product->base_price + $this->selectedSize->price_adjustment;
+        if ($this->product->hasColorsAndSizes() && $this->selectedSize) {
+            return $basePrice + ($this->selectedSize->price_adjustment ?? 0);
         }
+
+        return $basePrice;
     }
+
+    public function getDiscountAmount()
+    {
+        $sizeAdjustment = 0;
+
+        if ($this->product->hasColorsAndSizes() && $this->selectedSize) {
+            $sizeAdjustment = $this->selectedSize->price_adjustment ?? 0;
+        }
+
+        return $this->product->getDiscountAmount($sizeAdjustment);
+    }
+
+    /**
+     * a computed property returns the final price after applying the discount as well as the size price adjustment
+     */
+    // public function getDiscountedPrice()
+    // {
+
+
+    //     if ($this->selectedSize) {
+    //         return $this->product->getFinalPrice($this->selectedSize->price_adjustment);
+    //     }
+    // }
+
+
+
     public function render()
     {
         return view('livewire.product-detail', [
             'currentImages' => $this->getCurrentImages(),
-            'discountedPrice' => $this->getDiscountedPrice(),
-            'originalPrice' => $this->getOriginalPrice()
+            // 'currentPrice' => $this->getCurrentPrice(),
+            'originalPrice' => $this->getOriginalPrice(),
+            // 'discountedPrice'=>$this->getDiscountedPrice(),
+            'discountAmount' => $this->getDiscountAmount(),
+            'hasDiscount' => $this->product->hasActiveDiscount(),
+            'discountPercentage' => $this->product->getDiscountPercentage(),
+            'hasFreeShipping' => $this->product->free_shipping,
+            'maxQuantity' => $this->getMaxQuantity(),
         ]);
     }
 }

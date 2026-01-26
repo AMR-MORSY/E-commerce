@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use App\Listeners\SendOrderDetailsEmail;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
          Product::observe(ProductObserver::class);
+        
 
         
         Event::listen(

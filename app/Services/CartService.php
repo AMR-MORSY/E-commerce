@@ -36,7 +36,7 @@ class CartService
                         // Convert guest cart to user cart
                         $guestCart->update([
                             'user_id' => Auth::id(),
-                           
+
                         ]);
                         return $guestCart;
                     }
@@ -68,7 +68,7 @@ class CartService
         $newToken = Cart::generateCartToken();
 
         $cart = Cart::create([
-            
+
             'cart_token' => $newToken,
         ]);
 
@@ -137,16 +137,72 @@ class CartService
     }
 
 
+    // /**
+    //  * Add item to cart
+    //  */
+    // public function addItem(
+    //     Product $product,
+    //     int $colorId,
+    //     int $sizeId,
+    //     int $quantity = 1
+    // ): CartItem {
+    //     $cart = $this->getCart();
+    //     // Check if item already exists
+    //     $existingItem = $cart->items()
+    //         ->where('product_id', $product->id)
+    //         ->where('product_color_id', $colorId)
+    //         ->where('product_size_id', $sizeId)
+    //         ->first();
+
+    //     if ($existingItem) {
+    //         $existingItem->increment('quantity', $quantity);
+    //         return $existingItem->fresh();
+    //     }
+    //     // Create new cart item
+    //     $sizeAdjustmentPrice = ProductSize::find($sizeId)->price_adjustment;
+    //     return $cart->items()->create([
+    //         'product_id' => $product->id,
+    //         'product_color_id' => $colorId,
+    //         'product_size_id' => $sizeId,
+    //         'quantity' => $quantity,
+    //         'price' => $product->getFinalPrice($sizeAdjustmentPrice),
+    //     ]);
+    // }
+
     /**
-     * Add item to cart
+     * Add item to cart - handles all product types
+     * 
+     * @param Product $product
+     * @param int|null $colorId - Required for bags and clothing, null for accessories
+     * @param int|null $sizeId - Required for clothing, null for bags and accessories
+     * @param int $quantity
      */
     public function addItem(
         Product $product,
-        int $colorId,
-        int $sizeId,
+        ?int $colorId = null,
+        ?int $sizeId = null,
         int $quantity = 1
     ): CartItem {
+        // Validate based on product type
+        if ($product->isSimple()) {
+            // Simple product (accessories) - no color or size needed
+            $colorId = null;
+            $sizeId = null;
+        } elseif ($product->hasColorsOnly()) {
+            // Bags - color required, size not allowed
+            if (!$colorId) {
+                throw new \InvalidArgumentException('Color is required for this product');
+            }
+            $sizeId = null;
+        } elseif ($product->hasColorsAndSizes()) {
+            // Clothing - both color and size required
+            if (!$colorId || !$sizeId) {
+                throw new \InvalidArgumentException('Color and size are required for this product');
+            }
+        }
+
         $cart = $this->getCart();
+
         // Check if item already exists
         $existingItem = $cart->items()
             ->where('product_id', $product->id)
@@ -158,14 +214,14 @@ class CartService
             $existingItem->increment('quantity', $quantity);
             return $existingItem->fresh();
         }
+
         // Create new cart item
-        $sizeAdjustmentPrice = ProductSize::find($sizeId)->price_adjustment;
         return $cart->items()->create([
             'product_id' => $product->id,
             'product_color_id' => $colorId,
             'product_size_id' => $sizeId,
             'quantity' => $quantity,
-            'price' => $product->getFinalPrice($sizeAdjustmentPrice),
+            'price' => $product->base_price,
         ]);
     }
 

@@ -17,6 +17,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Product extends Model implements HasMedia
 {
     use InteractsWithMedia, HasProductImages;
+
+    const TYPE_SIMPLE = 'simple';              // Accessories
+    const TYPE_VARIABLE_COLOR = 'variable_color';        // Bags
+    const TYPE_VARIABLE_COLOR_SIZE = 'variable_color_size'; // Clothing
+
     protected $fillable = [
         'category_id',
         'name',
@@ -24,6 +29,7 @@ class Product extends Model implements HasMedia
         'description',
         'base_price', 
         'sku',
+        'simple_quantity',
         'is_active',
         'has_discount',
         'discount_type',
@@ -31,6 +37,8 @@ class Product extends Model implements HasMedia
         'discount_starts_at',
         'discount_ends_at',
         'free_shipping',
+        'is_featured',
+        'type'
     ];
 
     protected $casts = [
@@ -41,10 +49,60 @@ class Product extends Model implements HasMedia
         'discount_starts_at' => 'datetime',
         'discount_ends_at' => 'datetime',
         'free_shipping' => 'boolean',
+        'is_featured'=>'boolean',
+        'simple_quantity' => 'integer',
     ];
 
+     /**
+     * Check if product is simple (accessories)
+     */
+    public function isSimple(): bool
+    {
+        return $this->type === self::TYPE_SIMPLE;
+    }
+
+      /**
+     * Check if product has colors only (bags)
+     */
+    public function hasColorsOnly(): bool
+    {
+        return $this->type === self::TYPE_VARIABLE_COLOR;
+    }
+
+     /**
+     * Check if product has colors and sizes (clothing)
+     */
+    public function hasColorsAndSizes(): bool
+    {
+        return $this->type === self::TYPE_VARIABLE_COLOR_SIZE;
+    }
+     /**
+     * Get total stock based on product type
+     */
+    public function getTotalStockAttribute(): int
+    {
+        if ($this->isSimple()) {
+            return $this->simple_quantity ?? 0;
+        }
+
+        if ($this->hasColorsOnly()) {
+            return $this->colors->sum('quantity');
+        }
+
+        if ($this->hasColorsAndSizes()) {
+            return $this->colors->sum(function ($color) {
+                return $color->sizes->sum('quantity');
+            });
+        }
+
+        return 0;
+    }
    
-   
+    // Get full product URL path
+    public function getFullUrlPathAttribute()
+    {
+        return $this->category->full_path . '/' . $this->slug;
+    }
   
     public function coupons(): BelongsToMany
     {
@@ -67,15 +125,15 @@ class Product extends Model implements HasMedia
 
     public function getFormattedPriceAttribute(): string
     {
-        return '$' . number_format($this->base_price, 2);
+        return 'EGP' . number_format($this->base_price, 2);
     }
 
-    public function getTotalStockAttribute(): int
-    {
-        return $this->colors->sum(function ($color) {
-            return $color->sizes->sum('quantity');
-        });
-    }
+    // public function getTotalStockAttribute(): int
+    // {
+    //     return $this->colors->sum(function ($color) {
+    //         return $color->sizes->sum('quantity');
+    //     });
+    // }
 
     public function colors(): HasMany
     {
@@ -222,6 +280,14 @@ class Product extends Model implements HasMedia
         }
 
         return 0;
+    }
+
+      /**
+     * Check if product is in stock
+     */
+    public function inStock(): bool
+    {
+        return $this->total_stock > 0;
     }
 
 

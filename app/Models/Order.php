@@ -15,7 +15,8 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'order_number',
-        'customer_name',
+        'first_name',
+        'last_name',
         'customer_email',
         'customer_phone',
         'shipping_address',
@@ -111,14 +112,15 @@ class Order extends Model
         $order = self::create([
             'user_id' => $cart->user_id,
             'order_number' => self::generateOrderNumber(),
-            'customer_name' => $customerData['name'],
+            'first_name' => $customerData['first_name'],
+            'last_name' => $customerData['last_name'],
             'customer_email' => $customerData['email'],
             'customer_phone' => $customerData['phone'],
             'shipping_address' => $customerData['address'],
             'shipping_city' => $customerData['city'],
             'shipping_state' => $customerData['state'] ?? null,
             'shipping_country' => $customerData['country'],
-            'shipping_postal_code' => $customerData['postal_code'],
+            'shipping_postal_code' => $customerData['postal_code']?? null,
             'subtotal' => $subtotal,
             'discount_amount' => $discountAmount,
             'shipping_cost' => $shippingCost,
@@ -129,6 +131,7 @@ class Order extends Model
             'coupon_id' => $coupon?->id,
             'coupon_code' => $coupon?->code,
             'status' => 'pending',
+            'payment_method'=>$customerData['payment_method'],
             'payment_status' => 'pending',
         ]);
 
@@ -140,8 +143,8 @@ class Order extends Model
                 'product_size_id' => $cartItem->product_size_id,
                 'product_name' => $cartItem->product->name,
                 'product_sku' => $cartItem->product->sku,
-                'color_name' => $cartItem->productColor->name,
-                'size_name' => $cartItem->productSize->size,
+                'color_name' => $cartItem->productColor->name??null,
+                'size_name' => $cartItem->productSize->size??null,
                 'base_price' => $cartItem->base_price,
                 'discount_amount' => $cartItem->discount_amount,
                 'final_price' => $cartItem->final_price,
@@ -150,7 +153,21 @@ class Order extends Model
             ]);
 
             // Decrement stock
-            $cartItem->productSize->decrement('quantity', $cartItem->quantity);
+            if($cartItem->product->isSimple())
+            {
+                $cartItem->product->decrement('simple_quantity', $cartItem->quantity);
+
+            }
+            elseif($cartItem->product->hasColorsOnly())
+            {
+                $cartItem->productColor->decrement('quantity', $cartItem->quantity);
+
+            }
+            else{
+                $cartItem->productSize->decrement('quantity', $cartItem->quantity);
+
+            }
+           
         }
 
         // Increment coupon usage

@@ -4,7 +4,11 @@ namespace App\Livewire\Auth;
 
 use App\Models\User;
 use Livewire\Component;
+use Illuminate\Http\Request;
 use App\Services\CartService;
+use Illuminate\Routing\Route;
+
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 
@@ -29,7 +33,7 @@ class Register extends Component
         ];
     }
 
-    public function register(CartService $cartService)
+    public function register(Request $request,CartService $cartService)
     {
         $validated = $this->validate();
 
@@ -46,7 +50,16 @@ class Register extends Component
     
         $cart=$cartService->getCart();
     
-        return redirect()->back();
+        if($request->isMethod('post'))
+        {
+            return $this->redirect(route('home'));
+
+        }
+        elseif (Route::currentRouteName()) {
+            return $this->redirectRoute(Route::currentRouteName(),Route::current()->parameters());
+        }
+
+        return $this->redirect(route('home'));
     }
     public function render()
     {

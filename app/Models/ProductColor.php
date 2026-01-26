@@ -18,6 +18,11 @@ class ProductColor extends Model implements HasMedia
         'product_id',
         'name',
         'hex_code',
+        'quantity', // For bags (variable_color type)
+    ];
+
+    protected $casts = [
+        'quantity' => 'integer',
     ];
 
     public function product()
@@ -78,8 +83,25 @@ class ProductColor extends Model implements HasMedia
        
     }
 
+    /**
+     * Get total quantity based on product type
+     */
     public function getTotalQuantityAttribute(): int
     {
+        // For bags (variable_color), return color quantity
+        if ($this->product->hasColorsOnly()) {
+            return $this->quantity ?? 0;
+        }
+
+        // For clothing (variable_color_size), sum all sizes
         return $this->sizes->sum('quantity');
+    }
+
+    /**
+     * Check if color is in stock
+     */
+    public function inStock(): bool
+    {
+        return $this->total_quantity > 0;
     }
 }

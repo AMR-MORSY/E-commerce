@@ -1,4 +1,4 @@
-<div class=" w-full mx-auto  flex justify-center items-center mt-7">
+<div class=" w-full mx-auto  flex justify-center items-center mt-20">
 
     <form wire:submit="register">
         <!-- Personal Information -->
@@ -14,7 +14,7 @@
                         </g>
                     </svg>
                     <input type="text" wire:model="first_name" placeholder="First Name" pattern="[A-Za-z]{3,30}"
-                        title="First name must be 3-30 letters only (upper or lower case)" required />
+                        title="First name must be 3-30 letters only (upper or lower case)" required value="{{old('first_name')}}" />
 
 
 
@@ -36,7 +36,7 @@
                         </g>
                     </svg>
                     <input type="text" wire:model="last_name" placeholder="Last Name" pattern="[A-Za-z]{3,30}"
-                        title="First name must be 3-30 letters only (upper or lower case)" required />
+                        title="First name must be 3-30 letters only (upper or lower case)" required value="{{old('last_name')}}" />
 
 
 
@@ -58,7 +58,7 @@
                             <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                         </g>
                     </svg>
-                    <input type="email" wire:model="email" placeholder="mail@site.com" required />
+                    <input type="email" wire:model="email" placeholder="mail@site.com" required value="{{old('email')}}" />
                 </label>
                 @error('email')
                     <div class=" bg-error">
