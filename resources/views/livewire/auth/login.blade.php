@@ -24,10 +24,10 @@
             </div>
 
 
-            <div class="card bg-base-200 w-full max-w-sm shrink-0 ">
+            <div class="card bg-base-200 w-full  shrink-0 ">
                 <div class="card-body">
                     <form wire:submit="login">
-                       
+
                         <fieldset class="fieldset border-b-1 border-base-content pb-7">
                             <label class="label">Email</label>
                             <input type="email" class="input" wire:model="email" placeholder="Email" />
@@ -36,7 +36,7 @@
                             @enderror
                             <label class="label">Password</label>
                             <input type="password" id="password" wire:model="password" autocomplete="current-password"
-                                 class="input" placeholder="Password" />
+                                class="input" placeholder="Password" />
                             @error('password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -60,7 +60,7 @@
                         </div>
                     @endif
 
-                    <div class=" flex flex-col justify-center items-center mt-9">
+                    <div class=" flex flex-col justify-center  items-center mt-9">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 " fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -68,9 +68,10 @@
                         </svg>
                         <p class=" text-center text-base-content text-base"> Do not have account yet?</p>
 
-                        <a href="{{ route('register') }}"
+                        <a href="{{ route('login') }}"
                             class=" mt-2 underline decoration-solid decoration-secondary-content hover:text-secondary text-secondary-content text-center">CREATE
                             NEW ACCOUNT</a>
+
                     </div>
 
 
@@ -85,4 +86,14 @@
 
         </ul>
     </div>
+    <script>
+        function closeDrawer() {
+            const drawer = document.getElementById('my-drawer-3');
+            if (drawer) {
+                drawer.checked = false;
+            }
+
+
+        }
+    </script>
 </div>

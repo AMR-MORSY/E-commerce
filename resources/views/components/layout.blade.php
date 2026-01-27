@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="lemonade">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="acid">
 
 <head>
     <meta charset="utf-8">
@@ -7,14 +7,25 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'E-Commerce Store' }}</title>
 
+
+    <!-- Luxury Fonts from Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Raleway:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
 
 
 
-<body class="antialiased bg-gray-50">
-    <nav class="bg-white shadow-lg">
+<body class="bg-base-100 text-base-content ">
+    {{-- <nav class="navbar bg-base-200 fixed z-5  w-full lg:px-28">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex">
@@ -27,7 +38,7 @@
                             Products
                         </a>
                         @auth
-                          
+
                             <a href="{{ route('admin.products.index') }}"
                                 class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                                 Admin
@@ -36,7 +47,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <livewire:cart-icon/>
+                    <livewire:cart-icon />
 
                     @auth
 
@@ -56,7 +67,46 @@
                 </div>
             </div>
         </div>
-    </nav>
+    </nav> --}}
+
+    <div class="navbar bg-base-300 fixed z-5  w-full lg:px-28">
+        <div class="flex-none lg:hidden">
+            <label for="my-drawer-2" aria-label="open sidebar" class="btn btn-square btn-ghost">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    class="inline-block h-6 w-6 stroke-current">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+            </label>
+        </div>
+        <div class="mx-2 flex-1 px-2"> <a href="{{ route('home') }}" class="text-2xl font-bold ">ShopHub</a>
+        </div>
+        <div class="hidden flex-none lg:block">
+            <ul class="menu menu-horizontal">
+                <!-- Navbar menu content here -->
+                <li> <a href="{{ route('home') }}"
+                        class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Products
+                    </a></li>
+                <li> @auth
+
+                        <a href="{{ route('admin.products.index') }}"
+                            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Admin
+                        </a>
+                    @endauth
+                </li>
+            </ul>
+        </div>
+        <div class="lg:flex items-center space-x-4 hidden navbar-end">
+
+            <livewire:cart-icon />
+
+
+            {{-- <x-my-account-icon navbarDirection="top" /> --}}
+
+        </div>
+    </div>
 
     <main>
 
@@ -83,13 +133,13 @@
         {{ $slot }}
     </main>
 
-    <footer class="bg-gray-800 text-white ">
+    <footer class="bg-neutral  text-neutral-content  mt-auto ">
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <p>&copy; {{ date('Y') }} ShopHub. All rights reserved.</p>
             </div>
         </div>
-    </footer>
+    </footer> 
 
     @livewireScripts
     <script>

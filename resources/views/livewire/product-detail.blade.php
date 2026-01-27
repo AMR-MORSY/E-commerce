@@ -65,17 +65,17 @@
         <!-- Right Side: Product Details -->
         <div class="space-y-6">
             <!-- Product Info -->
-            <h1 class=" text-3xl  text-accent-content font-bold">{{ $product->name }}</h1>
+            <h1 class=" text-2xl  text-accent-content font-bold">{{ $product->name }}</h1>
             <!-- Price Section -->
             <div class="flex items-center gap-4 mb-2">
                 @if ($product->has_discount)
                     <!-- Discounted Price -->
                     <div class="text-base font-bold text-accent-content">
-                        EGP {{ number_format($discountedPrice, 2) }}
+                        EGP {{ number_format($discountedPrice) }}
                     </div>
                     <!-- Original Price -->
                     <div class="text-base text-accent-content  line-through">
-                        EGP{{ number_format($originalPrice, 2) }}
+                        EGP{{ number_format($originalPrice) }}
                     </div>
                     <!-- Discount Badge -->
                     <div class="bg-neutral text-white px-3 py-1 rounded-full text-sm font-semibold">
@@ -83,11 +83,11 @@
                     </div>
                 @else
                     <div class="text-base font-bold text-neutral">
-                        EGP {{ number_format($originalPrice, 2) }}
+                        EGP {{ number_format($originalPrice) }}
                     </div>
                     @if ($selectedSize && $selectedSize->price_adjustment != 0)
                         <div class="text-base text-neutral">
-                            Base: EGP {{ number_format($product->base_price, 2) }}
+                            Base: EGP {{ number_format($product->base_price) }}
                         </div>
                     @endif
                 @endif
@@ -95,7 +95,7 @@
 
             @if ($product->description)
                 <div class="prose prose-sm">
-                    <p class="text-neutral">{{ $product->description }}</p>
+                    <p class="text-neutral ">{{ $product->description }}</p>
                 </div>
             @endif
 

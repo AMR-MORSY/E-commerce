@@ -23,7 +23,7 @@
         }
     </style>
 
-    <main class="container mx-auto px-4 py-6">
+    <main class="container mx-auto px-4 py-6 mt-20">
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Sidebar -->
             <div class="w-full lg:w-1/4">
@@ -35,7 +35,8 @@
                                 MA
                             </div>
                             <div>
-                                <h2 class="font-bold text-gray-800">morsy.amr</h2>
+                                <h2 class="font-bold text-gray-800">
+                                    {{ Auth()->user()->last_name }}.{{ Auth()->user()->first_name }}</h2>
                                 <p class="text-sm text-gray-500">Gold Member</p>
                             </div>
                         </div>
@@ -47,25 +48,13 @@
 
                     <h3 class="font-bold text-base-content mb-4 text-lg">Dashboard</h3>
                     <nav class="space-y-2">
-                        <a href="{{route('user.dashboard')}}"
-                            class="flex items-center space-x-3 p-3 hover:bg-base-300  rounded-lg @if (request()->routeIs('user.dashboard'))
-                                bg-neutral text-neutral-content hover:bg-neutral
-                         
-
-                            
-                                
-                            @endif  font-medium ">
+                        <a href="{{ route('user.dashboard') }}"
+                            class="flex items-center space-x-3 p-3 hover:bg-base-300  rounded-lg @if (request()->routeIs('user.dashboard')) bg-neutral text-neutral-content hover:bg-neutral @endif  font-medium ">
                             <i class="fas fa-tachometer-alt w-5"></i>
                             <span>Dashboard</span>
                         </a>
-                        <a href="{{route('user.orders')}}"
-                            class="flex items-center space-x-3 p-3 hover:bg-base-300 rounded-lg @if (request()->routeIs('user.orders'))
-                                bg-neutral text-neutral-content hover:bg-neutral
-                         
-
-                            
-                                
-                            @endif font-medium ">
+                        <a href="{{ route('user.orders') }}"
+                            class="flex items-center space-x-3 p-3 hover:bg-base-300 rounded-lg @if (request()->routeIs('user.orders')) bg-neutral text-neutral-content hover:bg-neutral @endif font-medium ">
                             <i class="fas fa-shopping-bag w-5"></i>
                             <span>Orders</span>
                         </a>
@@ -98,18 +87,26 @@
                             <span
                                 class="ml-auto bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-full">12</span>
                         </a>
-                        <a href="#"
-                            class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:text-blue-600 font-medium nav-link">
-                            <i class="fas fa-sign-out-alt w-5"></i>
-                            <span>Logout</span>
-                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            <button type="submit"
+                                class="flex items-center w-full space-x-3 p-3 cursor-pointer rounded-lg text-gray-600 hover:text-blue-600 font-medium nav-link">
+
+                                @csrf
+
+
+                                <i class="fas fa-sign-out-alt w-5"></i>
+                                <span>Logout</span>
+
+
+                            </button>
+                        </form>
                     </nav>
                 </div>
             </div>
 
             <!-- Main Content -->
             <div class="w-full lg:w-3/4">
-                {{$slot}}
+                {{ $slot }}
             </div>
         </div>
     </main>

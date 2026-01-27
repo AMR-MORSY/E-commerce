@@ -54,29 +54,165 @@
             </form>
         </div>
     </div> --}}
+    <style>
+        .display-none {
+            display: none;
+        }
+    </style>
+    <div class="hero min-h-[50vh]">
+        <div class="hero-overlay bg-neutral"></div>
+        <div class="hero-content text-neutral-content flex flex-col mt-20  text-center">
 
-    <div class="hero bg-base-200 min-h-screen">
-        <div class="hero-content flex-col lg:flex-row-reverse">
-          <div class="text-center lg:text-left">
-            <h1 class="text-5xl font-bold">Login now!</h1>
-            <p class="py-6">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
-              quasi. In deleniti eaque aut repudiandae et a id nisi.
-            </p>
-          </div>
-          <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-            <div class="card-body">
-              <fieldset class="fieldset">
-                <label class="label">Email</label>
-                <input type="email" class="input" placeholder="Email" />
-                <label class="label">Password</label>
-                <input type="password" class="input" placeholder="Password" />
-                <div><a class="link link-hover">Forgot password?</a></div>
-                <button class="btn btn-neutral mt-4">Login</button>
-              </fieldset>
-            </div>
-          </div>
+            <h1 class=" text-5xl md:text-7xl ">My Account</h1>
+
+            <nav class="max-w-7xl  mx-auto px-4 py-4 mt-5" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2 text-sm">
+                    <li><a href="{{ url('/') }}" class=" hover:underline">Home</a></li>
+
+                    <li class="flex items-center">
+                        <svg class="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                        </svg>
+                        <span class="text-gray-500">My Account</span>
+                    </li>
+                </ol>
+            </nav>
+
+
         </div>
-      </div>
-</x-layout>
+    </div>
 
+    <div class=" min-h-[50vh] grid grid-cols-1 mx-auto max-w-7xl  px-4 py-8 md:grid-cols-2 ">
+        <div class="card bg-base-200 w-full  mx-auto  max-h-fit max-w-96 register display-none ">
+            <div class="card-body">
+                <h2 class=" underline text-neutral text-2xl text-center ">Register</h2>
+                <form wire:submit="login">
+
+                    <fieldset class="fieldset pb-7">
+                        <label class="label">Email</label>
+                        <input type="email" class="input" wire:model="email" placeholder="Email" />
+                        @error('email')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <label class="label">Password</label>
+                        <input type="password" id="password" wire:model="password" autocomplete="current-password"
+                            class="input" placeholder="Password" />
+                        @error('password')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <label class="label">Confirm Password</label>
+                        <input type="password" id="password" wire:model="confirm_password"
+                            autocomplete="current-password" class="input" placeholder="confirm Password" />
+                        @error('confirm_password')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+
+                        <button class="btn btn-neutral mt-4" type="submit">Register</button>
+                    </fieldset>
+                </form>
+
+
+
+
+            </div>
+        </div>
+
+        <div class="card bg-base-200  mx-auto w-full max-h-fit max-w-96 login  ">
+            <div class="card-body">
+                <h2 class=" underline text-neutral text-2xl text-center">Login</h2>
+                <form method="POST" action="{{ route('submit_login') }}">
+                    @csrf
+                    <fieldset class="fieldset pb-7">
+                        <label class="label">Email</label>
+                        <input type="email" class="input" value="{{ old('email') }}" name="email" placeholder="Email" />
+                        @error('email')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <label class="label">Password</label>
+                        <input type="password" id="password" name="password" autocomplete="current-password"
+                            class="input" placeholder="Password" />
+                        @error('password')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <div class=" flex items-center justify-between">
+
+                            <label class="label text-base-content">
+                                <input type="checkbox" name="remember" checked="checked"
+                                    class="checkbox checkbox-xs " />
+                                Remember me
+                            </label>
+
+                            <a class="link link-hover">Forgot password?</a>
+                        </div>
+                        <button class="btn btn-neutral mt-4" type="submit">Login</button>
+                    </fieldset>
+                </form>
+
+
+
+
+            </div>
+        </div>
+        <div class="divider md:hidden">OR</div>
+
+        <div
+            class=" w-full max-h-fit flex mx-auto md:mx-0 flex-col max-w-96 md:border-l-2 md:border-base-300 px-5 py-5  ">
+            <h2 class=" text-neutral text-center font-semibold text-2xl my-4 auth-heading">Register</h2>
+            <p class=" text-base-content register-content">Registering for this site allows you to access your order
+                status and history.
+                Just fill in the fields
+                below, and we'll get a new account set up for you in no time. We will only ask you for information
+                necessary to make the purchase process faster and easier.</p>
+            <p class=" text-base-content login-content display-none"> Your personal data will be used to support your
+                experience throughout this website, to manage access to
+                your
+                account, and for other purposes described in our privacy policy. </p>
+
+
+            <button class="btn btn-neutral mt-4 mx-auto" id="auth-toggle-btn" onclick="toggleAuth()">Register</button>
+
+
+        </div>
+
+
+
+
+
+    </div>
+    <script>
+        function toggleAuth() {
+            const authToggleBtn = document.getElementById('auth-toggle-btn');
+            const registerCard = document.querySelector('.register');
+            const loginCard = document.querySelector('.login');
+            const loginContent = document.querySelector('.login-content');
+            const registerContent = document.querySelector('.register-content');
+            const authHeading = document.querySelector('.auth-heading');
+            const innerText = authToggleBtn.innerText;
+
+            if (innerText === 'Register') {
+
+                registerCard.classList.remove('display-none');
+                loginCard.classList.add('display-none');
+                authToggleBtn.innerText = 'Login';
+                loginContent.classList.remove('display-none')
+                registerContent.classList.add('display-none')
+                authHeading.innerText = "Login"
+                return;
+
+            }
+            loginCard.classList.remove('display-none');
+            registerCard.classList.add('display-none');
+            authToggleBtn.innerText = 'Register';
+            registerContent.classList.remove('display-none')
+            loginContent.classList.add('display-none')
+            authHeading.innerText = "Register"
+            return;
+
+
+            // console.log(loginCard);
+
+
+        }
+    </script>
+</x-layout>

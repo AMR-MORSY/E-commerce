@@ -58,61 +58,59 @@
       }
     </style>
     
-    <table class="table table-xs responsive-table">
+    <table class="table  responsive-table">
       <thead class="hidden md:table-header-group">
         <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Job</th>
-          <th>Company</th>
-          <th>Location</th>
-          <th>Last Login</th>
-          <th>Favorite Color</th>
+          {{-- <th></th> --}}
+          <th>Order</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Action</th>
+          
         </tr>
       </thead>
       <tbody>
         <!-- Row 1 -->
+        @foreach ($orders as $order )
         <tr class="group">
-          <th>1</th>
-          <td class="md:table-cell">
-            <div class="mobile-row">
-              <span class="mobile-label md:hidden">Name:</span>
-              <span class="mobile-value">Cy Ganderton</span>
-            </div>
-          </td>
-          <td class="md:table-cell">
-            <div class="mobile-row">
-              <span class="mobile-label md:hidden">Job:</span>
-              <span class="mobile-value">Quality Control Specialist</span>
-            </div>
-          </td>
-          <td class="md:table-cell">
-            <div class="mobile-row">
-              <span class="mobile-label md:hidden">Company:</span>
-              <span class="mobile-value">Littel, Schaden and Vandervort</span>
-            </div>
-          </td>
-          <td class="md:table-cell">
-            <div class="mobile-row">
-              <span class="mobile-label md:hidden">Location:</span>
-              <span class="mobile-value">Canada</span>
-            </div>
-          </td>
-          <td class="md:table-cell">
-            <div class="mobile-row">
-              <span class="mobile-label md:hidden">Last Login:</span>
-              <span class="mobile-value">12/16/2020</span>
-            </div>
-          </td>
-          <td class="md:table-cell">
-            <div class="mobile-row">
-              <span class="mobile-label md:hidden">Favorite Color:</span>
-              <span class="mobile-value">Blue</span>
-            </div>
-          </td>
-        </tr>
+            {{-- <th>1</th> --}}
+            <td class="md:table-cell">
+              <div class="mobile-row">
+                <span class="mobile-label md:hidden">Order:</span>
+                <span class="mobile-value">#{{$order->order_number}}</span>
+              </div>
+            </td>
+            <td class="md:table-cell">
+              <div class="mobile-row">
+                <span class="mobile-label md:hidden">Date:</span>
+                <span class="mobile-value">{{$order->formatted_created_at}}</span>
+              </div>
+            </td>
+            <td class="md:table-cell">
+              <div class="mobile-row">
+                <span class="mobile-label md:hidden">Status:</span>
+                <span class="mobile-value">{{$order->status}}</span>
+              </div>
+            </td>
+            <td class="md:table-cell">
+              <div class="mobile-row">
+                <span class="mobile-label md:hidden">Total:</span>
+                <span class="mobile-value"> <strong>{{$order->total}}EGP</strong> for <strong>{{$order->items()->count()}}</strong> </span>
+              </div>
+            </td>
+           
+            <td class="md:table-cell">
+              <div class="mobile-row">
+                <span class="mobile-label md:hidden">Action:</span>
+                <span class="mobile-value">View</span>
+              </div>
+            </td>
+          </tr>
+        @endforeach
+       
         
-        <!-- Row 2 -->
+        {{-- <!-- Row 2 -->
         <tr class="group">
           <th>2</th>
           <td class="md:table-cell">
@@ -322,8 +320,8 @@
             </div>
           </td>
         </tr>
-      </tbody>
-      <tfoot class="hidden md:table-footer-group">
+      </tbody> --}}
+      {{-- <tfoot class="hidden md:table-footer-group">
         <tr>
           <th></th>
           <th>Name</th>
@@ -333,6 +331,6 @@
           <th>Last Login</th>
           <th>Favorite Color</th>
         </tr>
-      </tfoot>
+      </tfoot> --}}
     </table>
   </div>

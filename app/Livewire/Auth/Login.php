@@ -6,8 +6,9 @@ use Livewire\Component;
 use Illuminate\Http\Request;
 use App\Services\CartService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 
-
+#[Layout('components.layouts.app')]
 class Login extends Component
 {
 

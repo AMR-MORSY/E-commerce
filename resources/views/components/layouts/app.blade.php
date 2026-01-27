@@ -7,32 +7,26 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @if (isset($seoTitle) && isset($seoDescription))
-   
         <x-seo-meta :title="$seoTitle" :description="$seoDescription" :image="$seoImage ?? null" :canonical="$seoCanonical ?? null" :keywords="$seoKeywords ?? null" />
     @else
-   
-    <title>{{ $title ?? 'E-Commerce Store' }}</title>
-    <meta name="description" content="Shop quality products at great prices. Free shipping available.">
-    
+        <title>{{ $title ?? 'E-Commerce Store' }}</title>
+        <meta name="description" content="Shop quality products at great prices. Free shipping available.">
     @endif
-  
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @livewireStyles
 
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  <!-- Luxury Fonts from Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Raleway:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @livewireStyles
 
-        body {
-            font-family: 'Inter', sans-serif;
-            /* background-color: #f9fafb; */
-        }
-    </style>
+    <!-- Allow additional head content from pages -->
+    @stack('head')
 
-     <!-- Allow additional head content from pages -->
-     @stack('head')
 </head>
 
 
@@ -51,7 +45,7 @@
         <div class="drawer-content flex flex-col">
 
             <!-- Navbar -->
-            <div class="navbar bg-base-200 fixed z-5  w-full lg:px-28">
+            <div class="navbar bg-base-300 fixed z-5  w-full lg:px-28">
                 <div class="flex-none lg:hidden">
                     <label for="my-drawer-2" aria-label="open sidebar" class="btn btn-square btn-ghost">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

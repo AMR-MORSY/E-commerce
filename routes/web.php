@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Models\Order;
 use App\Models\Product;
 use App\Livewire\Checkout;
@@ -38,7 +39,10 @@ Route::get('/checkout', Checkout::class)->name('checkout');
 // })->name('order.success');
 
 // Authentication routes
-Route::get('/login', Login::class)->middleware('guest')->name('login');
+Route::get('/login', function () {
+    return view('auth.login');
+})->middleware('guest')->name('login');
+Route::post('/login',[LoginController::class,'login'] )->middleware('guest')->name('submit_login');
 Route::get('/register', Register::class)->middleware('guest')->name('register');
 
 // User routes - BEFORE wildcards
@@ -46,7 +50,8 @@ Route::get('/register', Register::class)->middleware('guest')->name('register');
 
 
 Route::middleware(['auth'])->name('user.')->group(function () {
-    Route::get('/my-account', UserDashboard::class)->name('dashboard');
+    Route::get('/my-account', UserDashboard::class)->name('account');
+    Route::get('/my-account/dashboard', UserDashboard::class)->name('dashboard');
     Route::get('/my-account/orders', UserOrders::class)->name('orders');
 });
 

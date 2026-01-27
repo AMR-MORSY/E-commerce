@@ -57,6 +57,9 @@ class Order extends Model
 
         return $number;
     }
+    public function getFormattedCreatedAtAttribute() {
+        return $this->created_at->format('F j, Y');
+    }
 
     public function items(): HasMany
     {
